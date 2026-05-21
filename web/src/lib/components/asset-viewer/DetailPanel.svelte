@@ -5,6 +5,7 @@
   import DetailPanelLocation from '$lib/components/asset-viewer/DetailPanelLocation.svelte';
   import DetailPanelRating from '$lib/components/asset-viewer/DetailPanelStarRating.svelte';
   import DetailPanelTags from '$lib/components/asset-viewer/DetailPanelTags.svelte';
+  import DetailPanelGadzoinks from '$lib/components/asset-viewer/DetailPanelGadzoinks.svelte';
   import { timeToLoadTheMap } from '$lib/constants';
   import { assetViewerManager } from '$lib/managers/asset-viewer-manager.svelte';
   import { authManager } from '$lib/managers/auth-manager.svelte';
@@ -381,7 +382,7 @@
     </section>
   {/if}
 {/if}
-
+<DetailPanelGadzoinks {asset} />
 {#if assetViewerManager.isEditFacesPanelOpen}
   <PersonSidePanel
     assetId={asset.id}

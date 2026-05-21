@@ -146,6 +146,7 @@ export const toTimelineAsset = (unknownAsset: AssetResponseDto | TimelineAsset):
   // representation here would place re-inserted assets (e.g. undo archive) in the wrong spot.
   const fileCreatedAt = fromISODateTimeUTCToObject(assetResponse.fileCreatedAt);
   const createdAt = fromISODateTimeUTCToObject(assetResponse.createdAt);
+  console.log('toTimelineAsset rating:', assetResponse.rating, 'id:', assetResponse.id,'exifInfo:',assetResponse.exifInfo, 'keys:', Object.keys(assetResponse));
 
   return {
     id: assetResponse.id,
@@ -157,6 +158,7 @@ export const toTimelineAsset = (unknownAsset: AssetResponseDto | TimelineAsset):
     createdAt,
     fileCreatedAt,
     isFavorite: assetResponse.isFavorite,
+    rating: assetResponse.exifInfo?.rating ?? null,
     visibility: assetResponse.visibility,
     isTrashed: assetResponse.isTrashed,
     isVideo: assetResponse.type === AssetTypeEnum.Video,

@@ -64,7 +64,13 @@ export type SearchLocationFilter = {
 export type SearchFilter = {
   query: string;
   ocr?: string;
-  queryType: 'smart' | 'metadata' | 'description' | 'fullPath' | 'ocr';
+  queryType: 'smart' | 'metadata' | 'description' | 'fullPath' | 'ocr'| 'gz';
+  gz?: {
+    prompt?: string;
+    model?: string;
+    lora?: string;
+    architecture?: string;
+  };
   personIds: SvelteSet<string>;
   tagIds: SvelteSet<string> | null;
   location: SearchLocationFilter;

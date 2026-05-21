@@ -19,6 +19,7 @@
   import CreateSharedLink from '$lib/components/timeline/actions/CreateSharedLinkAction.svelte';
   import DeleteAssets from '$lib/components/timeline/actions/DeleteAssetsAction.svelte';
   import DownloadAction from '$lib/components/timeline/actions/DownloadAction.svelte';
+  import RateAction from '$lib/components/timeline/actions/RateAction.svelte';
   import FavoriteAction from '$lib/components/timeline/actions/FavoriteAction.svelte';
   import RemoveFromAlbum from '$lib/components/timeline/actions/RemoveFromAlbumAction.svelte';
   import SelectAllAssets from '$lib/components/timeline/actions/SelectAllAction.svelte';
@@ -72,6 +73,8 @@
     mdiLink,
     mdiPlus,
     mdiPresentationPlay,
+    mdiStar,
+    mdiStarCheckOutline
   } from '@mdi/js';
   import { onDestroy } from 'svelte';
   import { t } from 'svelte-i18n';
@@ -79,6 +82,9 @@
   import type { PageData } from './$types';
   import AlbumDescription from './AlbumDescription.svelte';
   import AlbumTitle from './AlbumTitle.svelte';
+
+import { searchAssets } from '@immich/sdk';
+import { toTimelineAsset } from '$lib/utils/timeline-util';
 
   interface Props {
     data: PageData;
@@ -331,6 +337,80 @@
     $if: () => !assetViewerManager.isViewing,
     shortcuts: { key: 'Escape' },
   });
+
+
+
+
+const handleSelectUnrated = async () => {
+  try {
+    let page = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+      const response = await searchAssets({
+        metadataSearchDto: {
+          albumIds: [album.id],
+          rating: null,        // null = unrated
+          isFavorite: false,   // not favorited
+          withExif: true,
+          page,
+          size: 1000,
+        },
+      });
+
+      const assets = response.assets.items;
+      assetMultiSelectManager.selectAssets(
+        assets.map((a) => toTimelineAsset(a))
+      );
+
+      hasMore = assets.length === 1000;
+      page++;
+    }
+  } catch (error) {
+    handleError(error, 'Unable to select unrated assets');
+  }
+};
+
+
+
+	const ZhandleSelectUnrated = async () => {
+	  let total = 0;
+	  let selected = 0;
+	  
+	  for (const timelineMonth of timelineManager.months) {
+	    if (!timelineMonth.isLoaded) {
+	      await timelineManager.loadTimelineMonth(timelineMonth.yearMonth);
+	    }
+	    const assets = [...timelineMonth.assetsIterator()];
+	    total += assets.length;
+	    
+	    const unrated = assets.filter(asset => {
+	      console.log(`asset ${asset.id} isFavorite=${asset.isFavorite} rating=${asset.rating}`);
+	      return !asset.isFavorite && !asset.rating;
+	    });
+	    selected += unrated.length;
+	    assetMultiSelectManager.selectAssets(unrated);
+	  }
+	  console.log(`total=${total} selected=${selected}`);
+	};
+
+
+
+	const XhandleSelectUnrated = async () => {
+	  for (const timelineMonth of timelineManager.months) {
+	    if (!timelineMonth.isLoaded) {
+	      await timelineManager.loadTimelineMonth(timelineMonth.yearMonth);
+	    }
+	    const unrated = [...timelineMonth.assetsIterator()].filter(asset =>
+	      !asset.isFavorite &&
+	      (!asset.rating || asset.rating === 0)
+	    );
+	    assetMultiSelectManager.selectAssets(unrated);
+	  }
+	};
+
+
+
 </script>
 
 <OnEvents
@@ -483,6 +563,12 @@
               unarchive={assetMultiSelectManager.isAllArchived}
               onArchive={(ids, visibility) => timelineManager.update(ids, (asset) => (asset.visibility = visibility))}
             />
+                <RateAction rating={0} />
+		<RateAction rating={1} />
+		<RateAction rating={2} />
+		<RateAction rating={3} />
+		<RateAction rating={4} />
+		<RateAction rating={5} />
             <SetVisibilityAction menuItem onVisibilitySet={handleSetVisibility} />
           {/if}
           {#if assetMultiSelectManager.assets.length === 1}
@@ -581,6 +667,10 @@
                     onClick={() => modalManager.show(AlbumOptionsModal, { album })}
                   />
                 {/if}
+		
+		{#if isOwned}
+		   <MenuOption text="Select unrated" icon={mdiStarCheckOutline} onClick={handleSelectUnrated} />
+		{/if}
 
                 {#if isOwned}
                   <MenuOption
@@ -636,7 +726,7 @@
     </div>
   {/if}
 </div>
-
+XYZZY src routes albums
 <style>
   ::placeholder {
     color: rgb(60, 60, 60);

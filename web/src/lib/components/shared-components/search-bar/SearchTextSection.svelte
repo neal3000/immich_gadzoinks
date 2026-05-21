@@ -8,7 +8,7 @@
 
   let queryType = $derived(searchManager.filter.queryType);
 
-  const setType = (type: 'smart' | 'metadata' | 'description' | 'fullPath' | 'ocr') => {
+  const setType = (type: 'smart' | 'metadata' | 'description' | 'fullPath' | 'ocr' | 'gz') => {
     searchManager.filter.queryType = type;
   };
 </script>
@@ -36,6 +36,10 @@
           {getSearchTypeTitle('ocr')}
         </SearchButton>
       {/if}
+        <SearchButton checked active={queryType === 'gz'} onclick={() => setType('gz')}>
+          {getSearchTypeTitle('gz')}
+        </SearchButton>
+
     </div>
   </fieldset>
 </section>

@@ -1,0 +1,28 @@
+make dev
+
+# after updating gadzoinks Dockerfile
+~/immich-dev/docker $ docker compose -f docker-compose.dev.yml build --no-cache gadzoinks
+
+
+docker compose -f docker-compose.dev.yml logs database
+
+docker compose -f docker-compose.dev.yml up immich-server  database redis -d
+
+http://10.97.130.32:3000/photos
+
+docker exec -it immich_web bash
+docker exec -it immich_postgres psql -U postgres -d immich
+
+docker logs gadzoinks
+
+
+You can access the website or the mobile app at http://10.97.130.32:2283
+---------------------------------------------------
+If you want to configure custom information of the server, including the database, Redis information, or the backup (or upload) location, etc.
+
+  1. First bring down the containers with the command 'docker compose down' in the immich-app directory,
+
+  2. Then change the information that fits your needs in the '.env' file,
+
+  3. Finally, bring the containers back up with the command 'docker compose up --remove-orphans -d' in the immich-app directory
+

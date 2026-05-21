@@ -97,7 +97,6 @@
   <div class="dark">
     <ActionButton action={Close} />
   </div>
-
   <div
     class="dark -m-1 flex items-center gap-2 overflow-x-auto p-1 *:shrink-0"
     data-testid="asset-viewer-navbar-actions"
@@ -122,6 +121,7 @@
     <ActionButton action={Actions.SharedLinkDownload} />
     <ActionButton action={Actions.Info} />
     <ActionButton action={Actions.Favorite} />
+    XYZ asset-viewer-nav-bar
     <ActionButton action={Actions.Unfavorite} />
 
     {#if isOwner}
