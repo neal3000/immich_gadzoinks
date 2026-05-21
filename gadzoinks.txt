@@ -1,0 +1,15 @@
+caddy is used so port 2281 becomes primary port replacing 2283 ( use this in web and app ).
+Internally calls to /gz go to 2289 and everything else goes to the standard 2283
+
+Caddyfile
+ 
+
+:2281 {
+ handle /gz/* {
+        reverse_proxy localhost:2289
+    }
+   handle {
+        reverse_proxy localhost:2283
+    }
+}
+
