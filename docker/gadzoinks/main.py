@@ -531,19 +531,19 @@ CREATE TABLE IF NOT EXISTS gz_asset_metadata (
     created_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS gz_asset_metadata_model           ON gz_asset_metadata(model);
-CREATE INDEX IF NOT EXISTS gz_asset_metadata_architecture_id ON gz_asset_metadata(architecture_id);
-CREATE INDEX IF NOT EXISTS gz_asset_metadata_prompt_trgm ON gz_asset_metadata USING gin(prompt gin_trgm_ops);
-CREATE INDEX IF NOT EXISTS gz_asset_metadata_model_trgm ON gz_asset_metadata USING gin(model gin_trgm_ops);
-CREATE INDEX IF NOT EXISTS gz_lora_name_trgm ON gz_lora USING gin(name gin_trgm_ops);
-CREATE INDEX IF NOT EXISTS gz_architecture_name_trgm ON gz_architecture USING gin(name gin_trgm_ops);
-
 CREATE TABLE IF NOT EXISTS gz_lora (
     id              SERIAL PRIMARY KEY,
     filename        TEXT UNIQUE NOT NULL,
     name            TEXT,
     architecture_id INTEGER REFERENCES gz_architecture(id)
 );
+
+CREATE INDEX IF NOT EXISTS gz_asset_metadata_model           ON gz_asset_metadata(model);
+CREATE INDEX IF NOT EXISTS gz_asset_metadata_architecture_id ON gz_asset_metadata(architecture_id);
+CREATE INDEX IF NOT EXISTS gz_asset_metadata_prompt_trgm ON gz_asset_metadata USING gin(prompt gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS gz_asset_metadata_model_trgm ON gz_asset_metadata USING gin(model gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS gz_lora_name_trgm ON gz_lora USING gin(name gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS gz_architecture_name_trgm ON gz_architecture USING gin(name gin_trgm_ops);
 
 CREATE INDEX IF NOT EXISTS gz_lora_architecture_id ON gz_lora(architecture_id);
 
