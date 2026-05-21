@@ -94,9 +94,10 @@ export enum QueryType {
   METADATA = 'metadata',
   DESCRIPTION = 'description',
   OCR = 'ocr',
+  GZ = 'gz',
 }
 
-export const validQueryTypes = new Set([QueryType.SMART, QueryType.METADATA, QueryType.DESCRIPTION, QueryType.OCR]);
+export const validQueryTypes = new Set([QueryType.SMART, QueryType.METADATA, QueryType.DESCRIPTION, QueryType.OCR,QueryType.GZ]);
 
 export const locales = [
   { code: 'af-ZA', name: 'Afrikaans (South Africa)' },

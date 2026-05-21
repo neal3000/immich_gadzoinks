@@ -37,6 +37,7 @@
   class="group relative rounded-2xl border border-transparent p-5 hover:bg-gray-100 hover:border-gray-200 dark:hover:border-gray-800 dark:hover:bg-gray-900"
   data-testid="album-card"
 >
+XYZZY album-card
   {#if onShowContextMenu}
     <div
       id="icon-{album.id}"

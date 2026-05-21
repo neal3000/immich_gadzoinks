@@ -76,10 +76,12 @@
       <!-- ALBUM TITLE -->
       <h1 class="text-2xl md:text-4xl lg:text-6xl text-primary outline-none transition-all">
         {album.albumName}
+XYZZY album-viewer
       </h1>
 
       {#if album.assetCount > 0}
         <AlbumSummary {album} />
+XYZZY album-viewer
       {/if}
 
       <!-- ALBUM DESCRIPTION -->

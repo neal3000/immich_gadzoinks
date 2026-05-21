@@ -47,7 +47,30 @@
   import OnEvents from '../OnEvents.svelte';
   import UserAvatar from '../shared-components/user-avatar.svelte';
   import AlbumListItemDetails from './album-list-item-details.svelte';
+  
+import { onMount } from 'svelte';
+import type { Component } from 'svelte';
 
+const pluginModules = import.meta.glob<{ default: Component }>(
+  '../../plugins/details/*.svelte',
+  { eager: false }
+);
+
+let detailPlugins: Array<{ id: string; component: Component }> = $state([]);
+
+onMount(async () => {
+  const loaded: Array<{ id: string; component: Component }> = [];
+  for (const [path, loader] of Object.entries(pluginModules)) {
+    const id = path.split('/').pop()?.replace('.svelte', '') ?? path;
+    try {
+      const module = await loader();
+      loaded.push({ id, component: module.default });
+    } catch (e) {
+      console.warn(`Plugin failed to load: ${path}`, e);
+    }
+  }
+  detailPlugins = loaded;
+});
   interface Props {
     asset: AssetResponseDto;
     currentAlbum?: AlbumResponseDto | null;
@@ -568,6 +591,20 @@
     <DetailPanelTags {asset} {isOwner} />
   </section>
 {/if}
+
+<!-- DEBUG REMOVE BEFORE PR -->
+<section class="px-4 mt-4 text-xs font-mono text-gray-400 break-all">
+  <div>asset.id: {asset.id}</div>
+  <div>type: {asset.type}</div>
+  <div>filename: {asset.originalFileName}</div>
+</section>
+
+{#each detailPlugins as plugin (plugin.id)}
+  <section class="relative px-2 pb-12 dark:bg-immich-dark-bg dark:text-immich-dark-fg">
+    <svelte:component this={plugin.component} {asset} {isOwner} />
+  </section>
+{/each}
+
 
 {#if showEditFaces}
   <PersonSidePanel

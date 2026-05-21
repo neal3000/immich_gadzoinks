@@ -166,6 +166,7 @@ export const toTimelineAsset = (unknownAsset: AssetResponseDto | TimelineAsset):
 
   const localDateTime = fromISODateTimeUTCToObject(assetResponse.localDateTime);
   const fileCreatedAt = fromISODateTimeToObject(assetResponse.fileCreatedAt, assetResponse.exifInfo?.timeZone ?? 'UTC');
+  console.log('toTimelineAsset rating:', assetResponse.rating, 'id:', assetResponse.id,'exifInfo:',assetResponse.exifInfo, 'keys:', Object.keys(assetResponse));
 
   return {
     id: assetResponse.id,
@@ -176,6 +177,7 @@ export const toTimelineAsset = (unknownAsset: AssetResponseDto | TimelineAsset):
     localDateTime,
     fileCreatedAt,
     isFavorite: assetResponse.isFavorite,
+    rating: assetResponse.exifInfo?.rating ?? null,
     visibility: assetResponse.visibility,
     isTrashed: assetResponse.isTrashed,
     isVideo: assetResponse.type == AssetTypeEnum.Video,

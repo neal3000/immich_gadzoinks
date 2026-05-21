@@ -7,6 +7,7 @@
   import DeleteAction from '$lib/components/asset-viewer/actions/delete-action.svelte';
   import KeepThisDeleteOthersAction from '$lib/components/asset-viewer/actions/keep-this-delete-others.svelte';
   import RatingAction from '$lib/components/asset-viewer/actions/rating-action.svelte';
+  import RateAction from '$lib/components/timeline/actions/RateAction.svelte';
   import RemoveAssetFromStack from '$lib/components/asset-viewer/actions/remove-asset-from-stack.svelte';
   import RemoveFromAlbumAction from '$lib/components/timeline/actions/RemoveFromAlbumAction.svelte';
   import RestoreAction from '$lib/components/asset-viewer/actions/restore-action.svelte';
@@ -109,7 +110,6 @@
   <div class="dark">
     <ActionButton action={Close} />
   </div>
-
   <div
     class="flex p-1 -m-1 items-center gap-2 overflow-x-auto *:shrink-0 dark"
     data-testid="asset-viewer-navbar-actions"
@@ -134,6 +134,7 @@
     <ActionButton action={Actions.SharedLinkDownload} />
     <ActionButton action={Actions.Info} />
     <ActionButton action={Actions.Favorite} />
+    XYZ asset-viewer-nav-bar
     <ActionButton action={Actions.Unfavorite} />
 
     {#if isOwner}

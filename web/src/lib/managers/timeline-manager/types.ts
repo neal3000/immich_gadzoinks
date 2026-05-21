@@ -25,6 +25,7 @@ export type TimelineAsset = {
   fileCreatedAt: TimelineDateTime;
   visibility: AssetVisibility;
   isFavorite: boolean;
+  rating: number | null;  
   isTrashed: boolean;
   isVideo: boolean;
   isImage: boolean;

@@ -19,6 +19,7 @@
   import type { DateTime } from 'luxon';
   import { t } from 'svelte-i18n';
   import { SvelteSet } from 'svelte/reactivity';
+import SearchGzSection from '$lib/components/shared-components/search-bar/search-gz-section.svelte';
 
   type Props = {
     searchQuery: MetadataSearchDto | SmartSearchDto;
@@ -92,6 +93,11 @@
             ? MediaType.Video
             : MediaType.All,
       rating: searchQuery.rating,
+	gz: {
+	  prompt: 'gzPrompt' in searchQuery ? (searchQuery as any).gzPrompt : undefined,
+	  model: 'gzModel' in searchQuery ? (searchQuery as any).gzModel : undefined,
+	  lora: 'gzLora' in searchQuery ? (searchQuery as any).gzLora : undefined,
+	},
     };
   };
 
@@ -101,6 +107,7 @@
     filter = {
       query: '',
       ocr: undefined,
+      gz: { prompt: '', model: '', lora: '' },
       queryType: defaultQueryType(), // retain from localStorage or default
       personIds: new SvelteSet(),
       tagIds: new SvelteSet(),
@@ -148,6 +155,14 @@
       tagIds: filter.tagIds === null ? null : filter.tagIds.size > 0 ? [...filter.tagIds] : undefined,
       type,
       rating: filter.rating,
+	// gz fields — not part of Immich SDK types, carried as extra props
+    	// search page extracts and strips these before calling Immich API
+    	...(filter.queryType === 'gz' ? {
+      		gzPrompt: filter.gz?.prompt || undefined,
+      		gzModel: filter.gz?.model || undefined,
+      		gzLora: filter.gz?.lora || undefined,
+                gzArchitecture:  filter.gz?.architecture  || undefined,
+    	} : {}),
     };
 
     onClose(payload);
@@ -196,6 +211,10 @@
         {#if $preferences?.ratings.enabled}
           <SearchRatingsSection bind:rating={filter.rating} />
         {/if}
+
+	{#if filter.queryType === 'gz'}
+	  <SearchGzSection bind:gz={filter.gz} />
+	{/if}
 
         <div class="grid md:grid-cols-2 gap-x-5 gap-y-10">
           <!-- MEDIA TYPE -->

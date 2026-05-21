@@ -198,6 +198,19 @@ services:
   #   volumes:
   #     - grafana_data:/var/lib/grafana
 
+  # Non Standard Stuff
+  # remember to install the caddy stuff 
+  gadzoinks:
+    build: ./gadzoinks
+    container_name: gadzoinks
+    restart: unless-stopped
+    volumes:
+      - ./gadzoinks:/app    # host code mounted into container
+    env_file:
+      - .env
+    ports:
+      - '2289:2289'
+
 volumes:
   model_cache:
   prometheus_data:

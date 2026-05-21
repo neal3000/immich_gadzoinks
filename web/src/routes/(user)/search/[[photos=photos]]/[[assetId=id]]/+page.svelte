@@ -17,6 +17,7 @@
   import FavoriteAction from '$lib/components/timeline/actions/FavoriteAction.svelte';
   import SetVisibilityAction from '$lib/components/timeline/actions/SetVisibilityAction.svelte';
   import TagAction from '$lib/components/timeline/actions/TagAction.svelte';
+  import RateAction from '$lib/components/timeline/actions/RateAction.svelte';
   import AssetSelectControlBar from '$lib/components/timeline/AssetSelectControlBar.svelte';
   import { QueryParameter } from '$lib/constants';
   import { assetMultiSelectManager } from '$lib/managers/asset-multi-select-manager.svelte';
@@ -40,6 +41,7 @@
     searchAssets,
     searchSmart,
     type SmartSearchDto,
+    getAssetInfo
   } from '@immich/sdk';
   import { ActionButton, CommandPaletteDefaultProvider, Icon, IconButton, LoadingSpinner } from '@immich/ui';
   import { mdiArrowLeft, mdiDotsVertical, mdiImageOffOutline, mdiSelectAll } from '@mdi/js';
@@ -130,27 +132,77 @@
       return;
     }
     isLoading = true;
-
-    const searchDto: SearchTerms = {
-      page: nextPage,
-      withExif: true,
-      ...terms,
-    };
-
+    const { gzPrompt, gzModel, gzLora, ...immichTerms } = terms as any;
+    const hasGzFilters = gzPrompt || gzModel || gzLora;
+    // check if any standard Immich filters are set (beyond page/withExif)
+    const hasImmichFilters = Object.keys(immichTerms).some(k => 
+     !['page', 'withExif', 'query', 'queryAssetId'].includes(k) && immichTerms[k] !== undefined
+    );
     try {
-      const { albums, assets } =
-        ('query' in searchDto || 'queryAssetId' in searchDto) && smartSearchEnabled
-          ? await searchSmart({ smartSearchDto: { ...searchDto, language: $lang } })
-          : await searchAssets({ metadataSearchDto: searchDto });
+	    if (hasGzFilters) {
+	      // Step 1: get Immich asset IDs if standard filters present
+	      let immichIds: string[] | undefined;
+	      
+	      if (hasImmichFilters) {
+		// paginate through ALL Immich results to get full ID set
+		let page = 1;
+		immichIds = [];
+		while (true) {
+		  const { assets } = await searchAssets({ 
+		    metadataSearchDto: { ...immichTerms, page, size: 1000, withExif: false }
+		  });
+		  immichIds.push(...assets.items.map(a => a.id));
+		  if (!assets.nextPage) break;
+		  page++;
+		}
+	      }
 
-      searchResultAlbums.push(...albums.items);
-      searchResultAssets.push(...assets.items);
+	      // Step 2: gz search with optional ID filter
+	      const gzResponse = await fetch('/gz/search', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+		  prompt: gzPrompt,
+		  model: gzModel,
+		  lora: gzLora,
+		  asset_ids: immichIds,  // undefined = no filter
+          	page:         nextPage,
+          	size:         50,
+		}),
+	      }).then(r => r.json());
 
-      nextPage = Number(assets.nextPage) || 0;
-    } catch (error) {
-      handleError(error, $t('loading_search_results_failed'));
-    } finally {
-      isLoading = false;
+	      const gzIds: string[] = gzResponse.asset_ids;
+
+	      // Step 3: fetch each asset individually
+	      if (gzIds.length > 0) {
+		const assets = await Promise.all(gzIds.map(id => getAssetInfo({ id })));
+		searchResultAssets.push(...assets);
+		nextPage = gzResponse.next_page ?? 0;
+	      } else {
+		nextPage = 0;
+	      }
+	    } else { 
+		    const searchDto: SearchTerms = {
+		      page: nextPage,
+		      withExif: true,
+		      ...terms,
+		    };
+
+	      const { albums, assets } =
+		('query' in searchDto || 'queryAssetId' in searchDto) && smartSearchEnabled
+		  ? await searchSmart({ smartSearchDto: { ...searchDto, language: $lang } })
+		  : await searchAssets({ metadataSearchDto: searchDto });
+
+	      searchResultAlbums.push(...albums.items);
+	      searchResultAssets.push(...assets.items);
+
+	      nextPage = Number(assets.nextPage) || 0;
+	   }
+	} catch (error) {
+	      handleError(error, $t('loading_search_results_failed'));
+	    } finally {
+	      isLoading = false;
+	   
     }
   };
 
@@ -356,6 +408,14 @@
               {#if $preferences.tags.enabled}
                 <TagAction menuItem />
               {/if}
+	<TagAction menuItem />
+	<RateAction rating={0} />
+	<RateAction rating={1} />
+	<RateAction rating={2} />
+	<RateAction rating={3} />
+	<RateAction rating={4} />
+	<RateAction rating={5} />
+		<DeleteAssets menuItem {onAssetDelete} onUndoDelete={onSearchQueryUpdate} />
               <DeleteAssets menuItem {onAssetDelete} onUndoDelete={onSearchQueryUpdate} />
               <hr />
               <ActionMenuItem action={Actions.RegenerateThumbnailJob} />

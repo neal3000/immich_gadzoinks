@@ -6,7 +6,7 @@
 
   interface Props {
     query: string | undefined;
-    queryType?: 'smart' | 'metadata' | 'description' | 'ocr';
+    queryType?: 'smart' | 'metadata' | 'description' | 'ocr' | 'gz';
   }
 
   let { query = $bindable(), queryType = $bindable('smart') }: Props = $props();
@@ -36,6 +36,7 @@
       {#if featureFlagsManager.value.ocr}
         <RadioButton name="query-type" id="ocr-radio" label={$t('ocr')} bind:group={queryType} value="ocr" />
       {/if}
+      <RadioButton name="query-type" id="gz-radio" label="AI Image" bind:group={queryType} value="gz" />
     </div>
   </fieldset>
 
@@ -55,5 +56,8 @@
     <Field label={$t('search_by_ocr')}>
       <Input type="text" placeholder={$t('search_by_ocr_example')} bind:value={query} />
     </Field>
+  {:else if queryType === 'gz'}
+    <!-- no input here — gz inputs are in SearchGzSection rendered by the modal -->
+    <p class="text-xs text-gray-400 mt-1">Use the fields below to search by prompt, model, and LoRA.</p>
   {/if}
 </section>
