@@ -527,6 +527,7 @@ CREATE TABLE IF NOT EXISTS gz_asset_metadata (
     width           INTEGER,
     height          INTEGER,
     app             TEXT,
+    scheduler       TEXT,
     source_host     TEXT,
     created_at      TIMESTAMPTZ DEFAULT NOW()
 );
