@@ -23,6 +23,7 @@ app.add_middleware(
 def dprint(s):
     print(s)
     pass
+
 def apply_tags(asset_id: str, tags: list, cur):
     """Write tags to XMP sidecar via Immich API."""
     immich_url = os.environ.get('IMMICH_URL', 'http://localhost:2281')
@@ -219,65 +220,113 @@ async def search_assets(request: Request):
     conn = get_connection()
     cur = conn.cursor()
     try:
-        conditions = []
-        params = []
-
-        if asset_ids is not None:
-            conditions.append("m.asset_id = ANY(%s::uuid[])")
-            params.append(asset_ids)
-
+        # split prompt into terms on comma or ampersand
+        prompt_terms = []
         if prompt:
-            conditions.append("m.prompt ILIKE %s")
-            params.append(f'%{prompt}%')
+            # normalize 'and' keyword to & before splitting
+            normalized = re.sub(r'\band\b', ',', prompt, flags=re.IGNORECASE)
+            prompt_terms = [t.strip() for t in re.split(r'[,&]+', normalized) if t.strip()]
 
-        if model:
-            conditions.append("m.model ILIKE %s")
-            params.append(f'%{model}%')
+        def build_query(terms, use_ilike=True):
+            conditions = []
+            params = []
 
-        if architecture:
-            conditions.append("a.name ILIKE %s")
-            params.append(f'%{architecture}%')
+            if asset_ids is not None:
+                conditions.append("m.asset_id = ANY(%s::uuid[])")
+                params.append(asset_ids)
 
-        needs_lora_join = bool(lora)
-        lora_join = """
-            LEFT JOIN gz_asset_lora al ON al.asset_id = m.asset_id
-            LEFT JOIN gz_lora l ON l.id = al.lora_id
-        """ if needs_lora_join else ""
+            for term in terms:
+                if use_ilike:
+                    conditions.append("m.prompt ILIKE %s")
+                    params.append(f'%{term}%')
+                else:
+                    # Option B — each term matches any word via similarity
+                    conditions.append("m.prompt ILIKE %s")
+                    params.append(f'%{term}%')  # fallback still uses ilike but single term
 
-        # always join architecture since we may filter on it
-        arch_join = """
-            LEFT JOIN gz_architecture a ON a.id = m.architecture_id
-        """ if architecture else ""
+            if model:
+                conditions.append("m.model ILIKE %s")
+                params.append(f'%{model}%')
 
-        if lora:
-            conditions.append("l.name ILIKE %s")
-            params.append(f'%{lora}%')
+            if architecture:
+                conditions.append("a.name ILIKE %s")
+                params.append(f'%{architecture}%')
 
-        where = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''
+            if lora:
+                conditions.append("l.name ILIKE %s")
+                params.append(f'%{lora}%')
 
+            arch_join = "LEFT JOIN gz_architecture a ON a.id = m.architecture_id" if architecture else ""
+            lora_join = """
+                LEFT JOIN gz_asset_lora al ON al.asset_id = m.asset_id
+                LEFT JOIN gz_lora l ON l.id = al.lora_id
+            """ if lora else ""
 
-        # get total count for pagination
-        cur.execute(f"""
-            SELECT COUNT(DISTINCT m.asset_id)
-            FROM gz_asset_metadata m
-            {arch_join}
-            {lora_join}
-            {where}
-        """, params)
-        total = cur.fetchone()['count']
+            where = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''
+            return arch_join, lora_join, where, params
 
-        # get page of IDs
-        cur.execute(f"""
-            SELECT DISTINCT m.asset_id::text
-            FROM gz_asset_metadata m
-            {arch_join}
-            {lora_join}
-            {where}
-            LIMIT %s OFFSET %s
-        """, params + [size, offset])
+        def run_query(arch_join, lora_join, where, params):
+            # count
+            cur.execute(f"""
+                SELECT COUNT(DISTINCT m.asset_id)
+                FROM gz_asset_metadata m
+                {arch_join}
+                {lora_join}
+                {where}
+            """, params)
+            total = cur.fetchone()['count']
 
-        ids = [r['asset_id'] for r in cur.fetchall()]
+            # page of IDs
+            cur.execute(f"""
+                SELECT DISTINCT m.asset_id::text
+                FROM gz_asset_metadata m
+                {arch_join}
+                {lora_join}
+                {where}
+                LIMIT %s OFFSET %s
+            """, params + [size, offset])
+
+            ids = [r['asset_id'] for r in cur.fetchall()]
+            return total, ids
+
+        # Option A — AND search (all terms must match)
+        arch_join, lora_join, where, params = build_query(prompt_terms)
+        total, ids = run_query(arch_join, lora_join, where, params)
+
+        strategy = 'AND'
+
+        # Option B — fallback: OR search (any term matches)
+        # only fall back if we have multiple terms and got no results
+        if total == 0 and len(prompt_terms) > 1:
+            dprint(f"gz search: AND returned 0 results, trying OR fallback for terms {prompt_terms}")
+            or_conditions = []
+            or_params = []
+
+            if asset_ids is not None:
+                or_conditions.append("m.asset_id = ANY(%s::uuid[])")
+                or_params.append(asset_ids)
+
+            # OR across all prompt terms
+            term_clauses = ' OR '.join(['m.prompt ILIKE %s'] * len(prompt_terms))
+            or_conditions.append(f'({term_clauses})')
+            or_params.extend([f'%{t}%' for t in prompt_terms])
+
+            if model:
+                or_conditions.append("m.model ILIKE %s")
+                or_params.append(f'%{model}%')
+            if architecture:
+                or_conditions.append("a.name ILIKE %s")
+                or_params.append(f'%{architecture}%')
+            if lora:
+                or_conditions.append("l.name ILIKE %s")
+                or_params.append(f'%{lora}%')
+
+            or_where = ('WHERE ' + ' AND '.join(or_conditions)) if or_conditions else ''
+            total, ids = run_query(arch_join, lora_join, or_where, or_params)
+            strategy = 'OR'
+
         has_next = (offset + size) < total
+        dprint(f"gz search: strategy={strategy} terms={prompt_terms} total={total}")
 
         return {
             "asset_ids": ids,
@@ -285,10 +334,13 @@ async def search_assets(request: Request):
             "page": page,
             "size": size,
             "next_page": page + 1 if has_next else None,
+            "strategy": strategy,
         }
+
     finally:
         cur.close()
         conn.close()
+
 
 @app.get("/gz/architectures")
 async def get_architectures():
