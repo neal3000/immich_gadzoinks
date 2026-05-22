@@ -6,13 +6,17 @@ A set of custom ComfyUI nodes and Immich patches. A ComfyUI node saves images di
 
 ## What it does
 
-Images generated in ComfyUI are uploaded directly to Immich. On a patched Immich instance, the full generation metadata — prompt, model, seed, sampler, steps, CFG, LoRA — is stored in the database, shown in the asset viewer, and available as search filters.
+Images generated in ComfyUI are uploaded directly to Immich.
+On a patched Immich instance, the full generation metadata — prompt, model, seed, sampler, steps, CFG, LoRA — is stored in the database, shown in the asset viewer, and available as search filters.
 
 **Pipeline:**
 
 ```
-GPrompts → String Formatter → Sampler → Save to Immich
+Comfyui + comfyui_gprompts [custom node pack]  → Save to Immich node -> Immich server
 ```
+If you have a normal unpatched Immich server then image is uploaded with optional tags and album.
+If you have a patched Immich server then the image metadata is stored in the DB and can be displayed and used for searching.
+![Immich asset viewer showing Gadzoinks AI Generation metadata panel](images/image1.png)
 
 ---
 
@@ -23,73 +27,22 @@ Install via **ComfyUI Manager**, or manually from:
 - Registry: https://registry.comfy.org/nodes/gprompts
 - GitHub: https://github.com/GadzoinksOfficial/comfyui_gprompts
 
-The `comfyui_gprompts` node pack contains all three nodes. Only this pack needs to be installed in `custom_nodes`.
-
----
-
-### GPrompts Node
-
-Dynamic prompt expansion with two variant syntaxes.
-
-| Syntax | Behaviour |
-|--------|-----------|
-| `{{ a \| b \| c }}` | **Sequential** — cycles through options in order across generations |
-| `{ a \| b \| c }` | **Random** — picks one variant per generation |
-
-**Example:**
-
-```
-8k raw photo of a {{ pigeon | monkey | cat }}
-sitting on top of a traffic light showing { red | green | yellow },
-cinematic lighting
-```
-
-Run 1 → `8k raw photo of a pigeon sitting on top of a traffic light showing green, cinematic lighting`  
-Run 2 → `8k raw photo of a monkey sitting on top of a traffic light showing red, cinematic lighting`  
-Run 3 → `8k raw photo of a cat sitting on top of a traffic light showing green, cinematic lighting`
-
-Outputs: `text`, `computed_prompt`, `dynprompt`, `seed`
-
----
-
-### String Formatter Node
-
-Multi-input string assembly with up to 8 named inputs (`a` through `h`). Supports built-in variables:
-
-| Variable | Value |
-|----------|-------|
-| `$datetime` | Current date and time |
-| `$hostname` | Machine hostname |
-| `$os` | Operating system |
-
-Output feeds into the Save to Immich node's notes field.
-
----
-
-### Save to Immich Node
-
-Uploads the generated image directly to your Immich instance via the normal Immich API. On patched Immich, generation metadata is stored in the Immich DB for display and searching.
-
-- Configurable `filename_prefix`, `album`, and `tags`
-- Standard Immich — image saved, metadata not stored
-- Patched Immich — metadata posted to `/gz` endpoints, stored in DB, displayed and searchable
-- Optionally saves a local copy alongside the upload
+The `comfyui_gprompts` node pack contains a few helpful nodes along with save to immich server. gprompts is a powerful prompt expansion tool, and string formatter let you build strings from multiple sources and system variables (date, hostname,OS name...a)
 
 ---
 
 ## Vanilla vs Patched Immich
 
-| Feature | Standard Immich | Gadzoinks Immich |
-|---------|:-:|:-:|
-| Image saved to library | ✓ | ✓ |
-| Album assignment | ✓ | ✓ |
-| Tags applied | ✓ | ✓ |
-| Prompt stored | ✗ | ✓ |
-| Model / seed / sampler stored | ✗ | ✓ |
-| AI Generation panel in viewer | ✗ | ✓ |
-| Download Workflow button | ✗ | ✓ |
-| XMP sidecar written | ✗ | ✓ |
-| Search by prompt, model, LoRA | ✗ | ✓ |
+| Feature                        | Standard Immich | Gadzoinks Immich |
+|------------------------------- |:-:|:-:|
+| Image saved to library         | ✓ | ✓ |
+| Album assignment               | ✓ | ✓ |
+| Tags applied                   | ✓ | ✓ |
+| Prompt and gen data stored     | ✗ | ✓ |
+| Model / lora stored            | ✗ | ✓ |
+| AI Generation panel in viewer  | ✗ | ✓ |
+| Download Workflow button       | ✗ | ✓ |
+| Search by prompt, model, LoRA  | ✗ | ✓ |
 
 ---
 
@@ -112,10 +65,10 @@ Immich search extended with AI Generation fields: prompt text, architecture, mod
 ```
 ┌─────────────────────────────────────────────────────┐
 │  ComfyUI                                            │
-│  ┌─────────────────────────────────────────────┐   │
-│  │  comfyui_gprompts node pack                 │   │
-│  │  GPrompts · String Formatter · Save to Immich│   │
-│  └─────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────┐    │
+│  │  comfyui_gprompts node pack                 │    │
+│  │  GPrompts · String Formatter· Save to Immich│    │
+│  └─────────────────────────────────────────────┘    │
 └───────────────────────┬─────────────────────────────┘
                         │ HTTP to Immich host
                         ▼
@@ -127,8 +80,8 @@ Immich search extended with AI Generation fields: prompt text, architecture, mod
         │ /gz REST calls                │ standard Immich API
         ▼                               ▼
 ┌───────────────────┐        ┌──────────────────────┐
-│  Gadzoinks server │        │  Immich               │
-│  (Docker)         │        │  (Docker, unmodified) │
+│  Gadzoinks server │        │  Immich              │
+│  (Docker)         │        │  (Docker, unmodified)│
 │  FastAPI          │        └──────────────────────┘
 │  metadata ingest  │
 │  XMP sidecar      │
@@ -148,7 +101,6 @@ Immich search extended with AI Generation fields: prompt text, architecture, mod
 └─────────────────────────────────────────────────────┘
 ```
 
-Install via ComfyUI Manager · [registry.comfy.org/nodes/gprompts](https://registry.comfy.org/nodes/gprompts) · [github.com/GadzoinksOfficial/comfyui_gprompts](https://github.com/GadzoinksOfficial/comfyui_gprompts)
 
 ---
 
@@ -184,3 +136,58 @@ Install via ComfyUI Manager · [registry.comfy.org/nodes/gprompts](https://regis
 
 GNU General Public License v3.0 — see [LICENSE](LICENSE)
 
+---
+
+## Install notes
+```
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+newgrp docker
+
+sudo mkdir /opt/library
+sudo chown $USER:$USER /opt/library/
+git clone https://github.com/neal3000/immich_gadzoinks.git immich-dev
+cd immich-dev
+git checkout immich_gadzoinks
+
+edit these values , is DB_DATA_LOCATION used ?
+UPLOAD_LOCATION=/opt/library
+DB_DATA_LOCATION=/opt/postgres
+vi docker/.env
+
+
+cd docker/
+docker compose -f docker-compose.dev.yml up immich-server immich-web database redis -d
+docker compose -f docker-compose.dev.yml logs -f
+
+
+test with web server http://localhost:3000
+create account, create an API key ( and save it for later )
+in account settings. Star Rating, Enable. Tags, enable.
+click save
+
+sudo apt install -y caddy
+sudo tee /etc/caddy/Caddyfile << 'EOF'
+:2281 {
+    handle /gz/* {
+        reverse_proxy localhost:2289
+    }
+    handle {
+        reverse_proxy localhost:3000
+    }
+}
+EOF
+
+sudo systemctl restart caddy
+sudo systemctl enable caddy
+
+docker compose -f docker-compose.dev.yml up -d gadzoinks
+cd ~/immich-dev
+make dev
+
+test with web server http://localhost:2281
+test with comfyui
+install comfyui_gprompts ( you can use comfyui mananger (--enable-manager) , or install into custom_nodes folder )
+open comfyui settings, select 'Gadzoinks' enter api key , hostname and port
+use 'Save Image to Immich' node , instead of 'Save Image'
+```
