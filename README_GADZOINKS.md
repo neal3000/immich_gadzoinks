@@ -14,9 +14,9 @@ On a patched Immich instance, the full generation metadata — prompt, model, se
 ```
 Comfyui + comfyui_gprompts [custom node pack]  → Save to Immich node -> Immich server
 ```
-If you have a normal unpatched Immich server then image is uploaded with optional tags and album.
+If you have a normal unpatched Immich server then images are uploaded with optional tags and album.
 If you have a patched Immich server then the image metadata is stored in the DB and can be displayed and used for searching.
-![Immich asset viewer showing Gadzoinks AI Generation metadata panel](images/image1.png)
+![Immich asset viewer showing Gadzoinks AI Generation metadata panel](images/image2.png)
 
 ---
 
@@ -27,7 +27,7 @@ Install via **ComfyUI Manager**, or manually from:
 - Registry: https://registry.comfy.org/nodes/gprompts
 - GitHub: https://github.com/GadzoinksOfficial/comfyui_gprompts
 
-The `comfyui_gprompts` node pack contains a few helpful nodes along with save to immich server. gprompts is a powerful prompt expansion tool, and string formatter let you build strings from multiple sources and system variables (date, hostname,OS name...a)
+The `comfyui_gprompts` node pack contains a few helpful nodes along with save to immich server. gprompts is a powerful prompt expansion tool, and string formatter let you build strings from multiple sources and system variables (date, hostname,OS name...)
 
 ---
 
@@ -56,7 +56,7 @@ The `comfyui_gprompts` node pack contains a few helpful nodes along with save to
 
 Immich search extended with AI Generation fields: prompt text, architecture, model, and LoRA.
 
-![Immich search dialog showing AI Generation filter fields](images/image2.png)
+![Immich search dialog showing AI Generation filter fields](images/search.png)
 
 ---
 
