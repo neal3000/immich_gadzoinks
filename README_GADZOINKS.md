@@ -60,6 +60,12 @@ Immich search extended with AI Generation fields: prompt text, architecture, mod
 
 ---
 
+## Mobile Support
+
+None. The mobile app will continue to work fine. But the new AI features are web only for now.
+
+---
+
 ## System Architecture
 
 ```
