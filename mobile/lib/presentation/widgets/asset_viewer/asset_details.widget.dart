@@ -10,6 +10,7 @@ import 'package:immich_mobile/presentation/widgets/asset_viewer/asset_details/pe
 import 'package:immich_mobile/presentation/widgets/asset_viewer/asset_details/rating_details.widget.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/asset_details/technical_details.widget.dart';
 import 'package:immich_mobile/providers/infrastructure/asset_viewer/asset.provider.dart';
+import 'package:immich_mobile/presentation/widgets/asset_viewer/asset_details/gz_details.widget.dart';
 
 class AssetDetails extends ConsumerWidget {
   final BaseAsset asset;
@@ -38,6 +39,7 @@ class AssetDetails extends ConsumerWidget {
             LocationDetails(asset: asset, exifInfo: exifInfo),
             TechnicalDetails(asset: asset, exifInfo: exifInfo),
             RatingDetails(exifInfo: exifInfo),
+            GzDetails(asset: asset), 
             AppearsInDetails(asset: asset),
             SizedBox(height: context.padding.bottom + 48),
           ],
