@@ -7,7 +7,6 @@
   import ChangeDescription from '$lib/components/timeline/actions/ChangeDescriptionAction.svelte';
   import ChangeLocation from '$lib/components/timeline/actions/ChangeLocationAction.svelte';
   import CreateSharedLink from '$lib/components/timeline/actions/CreateSharedLinkAction.svelte';
-  import RateAction from '$lib/components/timeline/actions/RateAction.svelte';
   import DeleteAssets from '$lib/components/timeline/actions/DeleteAssetsAction.svelte';
   import DownloadAction from '$lib/components/timeline/actions/DownloadAction.svelte';
   import FavoriteAction from '$lib/components/timeline/actions/FavoriteAction.svelte';
@@ -166,12 +165,6 @@
           {#if authManager.preferences.tags.enabled}
             <TagAction menuItem />
           {/if}
-	<RateAction rating={0} />
-	<RateAction rating={1} />
-	<RateAction rating={2} />
-	<RateAction rating={3} />
-	<RateAction rating={4} />
-	<RateAction rating={5} />
           <DeleteAssets
             menuItem
             onAssetDelete={(assetIds) => timelineManager.removeAssets(assetIds)}
