@@ -89,6 +89,9 @@ export const getSearchTypeTitle = (type: string) => {
     case 'ocr': {
       return $t('ocr');
     }
+    case 'gz': {
+       return $t('ai_image_metadata');
+    }
     default: {
       return;
     }
@@ -113,6 +116,10 @@ export const getSearchTypePlaceholder = (type: string) => {
     case 'smart': {
       return $t('search_by_context_example');
     }
+    case 'gz': {
+      return $t('getSearchTypePlaceholder_gz');
+    }
+
     default: {
       return $t('search_your_photos');
     }

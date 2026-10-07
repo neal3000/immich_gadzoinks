@@ -9,11 +9,10 @@
   }
 
   interface Props {
-    gz: GzFilter;
+    gz?: GzFilter;
   }
 
-  let { gz = $bindable() }: Props = $props();
-
+  let { gz = $bindable({ prompt: '', model: '', lora: '', architecture: '' }) }: Props = $props();
   let models: string[] = $state([]);
   let loras: string[] = $state([]);
   let architectures: string[] = $state([]);

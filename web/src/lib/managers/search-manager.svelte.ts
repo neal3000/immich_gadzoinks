@@ -50,10 +50,23 @@ class SearchManager {
       queryType = QueryType.OCR;
     }
 
+    let gz: SearchFilter['gz'] = { prompt: '', model: '', lora: '', architecture: '' };
+    const sq = searchQuery as any;
+    if (sq.gzPrompt || sq.gzModel || sq.gzLora || sq.gzArchitecture) {
+      gz = {
+        prompt: sq.gzPrompt,
+        model: sq.gzModel,
+        lora: sq.gzLora,
+        architecture: sq.gzArchitecture,
+      };
+      queryType = QueryType.GZ;
+    }
+
     return {
       query,
       ocr: searchQuery.ocr,
       queryType,
+      gz,
       queryAssetId: 'queryAssetId' in searchQuery ? searchQuery.queryAssetId : undefined,
       personIds: new SvelteSet('personIds' in searchQuery ? searchQuery.personIds : []),
       tagIds:
@@ -91,7 +104,8 @@ class SearchManager {
     };
   }
 
-  #toQuery(): MetadataSearchDto | SmartSearchDto {
+  #toQuery(): MetadataSearchDto &
+    SmartSearchDto & { gzPrompt?: string; gzModel?: string; gzLora?: string; gzArchitecture?: string } {
     let type: AssetTypeEnum | undefined = undefined;
     if (this.filter.mediaType === MediaType.Image) {
       type = AssetTypeEnum.Image;
@@ -127,6 +141,14 @@ class SearchManager {
       tagIds: this.filter.tagIds === null ? null : this.filter.tagIds.size > 0 ? [...this.filter.tagIds] : undefined,
       type,
       rating: this.filter.rating,
+      ...(this.filter.queryType === 'gz'
+        ? {
+            gzPrompt: this.filter.gz?.prompt || undefined,
+            gzModel: this.filter.gz?.model || undefined,
+            gzLora: this.filter.gz?.lora || undefined,
+            gzArchitecture: this.filter.gz?.architecture || undefined,
+          }
+        : {}),
     };
   }
 

@@ -27,3 +27,6 @@ vite.config.js.timestamp-*
 .devcontainer/.env*
 *.tsbuildinfo
 *.tsbuildInfo
+docker/gadzoinks/__pycache__/
+open-api/typescript-sdk/
+package-lock.json

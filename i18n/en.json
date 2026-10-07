@@ -1,4 +1,6 @@
-{
+{ 
+	"ai_image_metadata":"ai_image_metadata value",
+	"getSearchTypePlaceholder_gz":"getSearchTypePlaceholder_gz value",
   "about": "About",
   "accept": "Accept",
   "account": "Account",

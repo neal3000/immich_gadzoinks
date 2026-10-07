@@ -36,6 +36,7 @@
     type AlbumResponseDto,
     type AssetResponseDto,
     AssetVisibility,
+    getAssetInfo,
     getPerson,
     getTagById,
     type MetadataSearchDto,
@@ -128,37 +129,88 @@
   }
 
   // eslint-disable-next-line svelte/valid-prop-names-in-kit-pages
+  // eslint-disable-next-line svelte/valid-prop-names-in-kit-pages
   export const loadNextPage = async (force?: boolean) => {
     if (!nextPage || (isLoading && !force)) {
       return;
     }
     isLoading = true;
 
-    const searchDto: SearchTerms = {
-      page: nextPage,
-      withExif: true,
-      ...terms,
-    };
+    const { gzPrompt, gzModel, gzLora, gzArchitecture, ...immichTerms } = terms as any;
 
     try {
-      const { albums, assets } =
-        ('query' in searchDto || 'queryAssetId' in searchDto) && smartSearchEnabled
-          ? await searchSmart({
-              smartSearchDto: { visibility: AssetVisibility.Timeline, ...searchDto, language: $lang },
-            })
-          : await searchAssets({ metadataSearchDto: { visibility: AssetVisibility.Timeline, ...searchDto } });
+      if (searchManager.filter.queryType === 'gz') {
+        const hasGzFilters = gzPrompt || gzModel || gzLora || gzArchitecture;
 
-      searchResultAlbums.push(...albums.items);
-      searchResultAssets.push(...assets.items);
+        // Step 1: if any standard Immich filters are present, page through them first
+        let immichIds: string[] | undefined;
+        const hasImmichFilters = Object.keys(immichTerms).some(
+          (k) => !['page', 'withExif', 'query', 'queryAssetId'].includes(k) && immichTerms[k] !== undefined,
+        );
 
-      nextPage = Number(assets.nextPage) || 0;
+        if (hasGzFilters && hasImmichFilters) {
+          let page = 1;
+          immichIds = [];
+          while (true) {
+            const { assets } = await searchAssets({
+              metadataSearchDto: { ...immichTerms, page, size: 1000, withExif: false },
+            });
+            immichIds.push(...assets.items.map((a) => a.id));
+            if (!assets.nextPage) break;
+            page++;
+          }
+        }
+
+        // Step 2: GZ search, optionally filtered by Immich IDs
+        const gzResponse = await fetch('/gz/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: gzPrompt,
+            model: gzModel,
+            lora: gzLora,
+            architecture: gzArchitecture,
+            asset_ids: immichIds,
+            page: nextPage,
+            size: 50,
+          }),
+        }).then((r) => r.json());
+
+        const gzIds: string[] = gzResponse.asset_ids ?? [];
+
+        if (gzIds.length > 0) {
+          const assets = await Promise.all(gzIds.map((id) => getAssetInfo({ id })));
+          searchResultAssets.push(...assets);
+          nextPage = gzResponse.next_page ?? 0;
+        } else {
+          nextPage = 0;
+        }
+      } else {
+        // Standard Immich search
+        const searchDto: SearchTerms = {
+          page: nextPage,
+          withExif: true,
+          ...terms,
+        };
+
+        const { albums, assets } =
+          ('query' in searchDto || 'queryAssetId' in searchDto) && smartSearchEnabled
+            ? await searchSmart({
+                smartSearchDto: { visibility: AssetVisibility.Timeline, ...searchDto, language: $lang },
+              })
+            : await searchAssets({ metadataSearchDto: { visibility: AssetVisibility.Timeline, ...searchDto } });
+
+        searchResultAlbums.push(...albums.items);
+        searchResultAssets.push(...assets.items);
+
+        nextPage = Number(assets.nextPage) || 0;
+      }
     } catch (error) {
       handleError(error, $t('loading_search_results_failed'));
     } finally {
       isLoading = false;
     }
   };
-
   function getHumanReadableDate(dateString: string) {
     const date = parseUtcDate(dateString).startOf('day');
     return date.toLocaleString(

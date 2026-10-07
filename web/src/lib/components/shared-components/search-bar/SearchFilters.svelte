@@ -24,6 +24,7 @@
   import SearchTextSection from './SearchTextSection.svelte';
   import SearchDisplaySection from './SearchDisplaySection.svelte';
   import SearchRatingsSection from './SearchRatingsSection.svelte';
+  import SearchGzSection from './search-gz-section.svelte';
   import { authManager } from '$lib/managers/auth-manager.svelte';
   import {
     getPeople,
@@ -128,6 +129,16 @@
       title: $t('media'),
       activeTitle: () => mediaTitle,
     },
+    {
+      name: 'gz',
+      icon: mdiImage,  // or a more fitting icon like mdiCreation
+      title: $t('ai_image_metadata'),
+      activeTitle: () =>
+        searchManager.filter.gz?.prompt ||
+        searchManager.filter.gz?.model ||
+        searchManager.filter.gz?.lora ||
+        searchManager.filter.gz?.architecture,
+    },
   ];
 
   const advancedFiltersSet = $derived(
@@ -210,7 +221,7 @@
               class={activeFilter === item.name ? 'border-2' : undefined}
               onclick={() => (activeFilter = item.name)}
             >
-              {item.activeTitle() ?? item.title}
+              {item.activeTitle() || item.title}
             </SearchButton>
           {/each}
         </div>
@@ -229,6 +240,9 @@
             <SearchTagsSection bind:title={tagsTitle} parentPromise={tagsPromise} />
           {:else if activeFilter === 'media'}
             <SearchMediaSection />
+	  {:else if activeFilter === 'gz'}
+	    <SearchGzSection gz={searchManager.filter.gz} />
+            <!-- temporarily disabled to debug SearchGzSection -->
           {/if}
         </div>
       {/if}
