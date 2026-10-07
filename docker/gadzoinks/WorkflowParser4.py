@@ -278,8 +278,8 @@ def trace_text(ref: Any, pf: Dict, visited: set = None) -> Optional[str]:
             v = inputs.get(key)
             if is_ref(v):
                 result = trace_text(v, pf, visited)
-            if result:
-                return result
+                if result:
+                    return result
         return None
 
     if ct == 'TextGenerate':
@@ -433,7 +433,13 @@ def trace_cfg(ref: Any, pf: Dict) -> Optional[float]:
                 pass
 
     if ct == 'BasicGuider':
-        # no cfg — return None
+        # Flux: no cfg on the guider, but FluxGuidance usually sits on its conditioning
+        cond = resolve_ref(inputs.get('conditioning'), pf)
+        if cond and cond.get('class_type') == 'FluxGuidance':
+            try:
+                return float(cond.get('inputs', {}).get('guidance'))
+            except (TypeError, ValueError):
+                pass
         return None
 
     # pass through

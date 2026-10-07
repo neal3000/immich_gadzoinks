@@ -10,6 +10,13 @@ from fastapi import FastAPI, Request,status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from WorkflowParser4 import parse_comfyui_workflow_async
+from EmbeddedMetadata import extract_from_tags
+
+# gz_asset_metadata.meta_source: who wrote the row.
+#   'gadzoinks' - the ComfyUI node posted it to /gz/ingest (authoritative)
+#   'embedded'  - parsed from the file by /gz/ingest_embedded (fills gaps only)
+SOURCE_NODE = 'gadzoinks'
+SOURCE_EMBEDDED = 'embedded'
 
 app = FastAPI()
 
@@ -105,26 +112,24 @@ async def ingest(request: Request):
     tags        = info.get('tags', [])        # list of strings e.g. ["ai/lora/extr3m3hair", "beach"]
     rating      = info.get('rating')    
     metadata = await parse_comfyui_workflow_async(workflow,promptflow)
-    if not metadata:
-        # TODO what should i do for bad exit ?
-        if workflow or promptflow:
-            store_workflow('unknown',asset_id,workflow , promptflow)
+    if not metadata and not (workflow or promptflow):
         return JSONResponse( status_code=201,content={"status": "ok", "asset_id": asset_id})
-    if source_host:
-        metadata['source_host'] = source_host
-    if computed_prompt:
-        metadata['prompt'] = computed_prompt
-    #print(f"Got asset ID: {asset_id}")
-    #print(f"Got workflow: {workflow}")
-    #print(f"JSON: {body}")
-    print(f"metadata: \n{json.dumps(metadata,indent=4)}")
+    if metadata:
+        if source_host:
+            metadata['source_host'] = source_host
+        if computed_prompt:
+            metadata['prompt'] = computed_prompt
+        print(f"metadata: \n{json.dumps(metadata,indent=4)}")
 
     conn = get_connection()
     try:
         cur = conn.cursor()
-        print("a");
-        parse_and_store( cur, asset_id, metadata,workflow,promptflow )
-        print("b")
+        lock_asset(cur, asset_id)
+        if metadata:
+            parse_and_store(cur, asset_id, metadata, workflow, promptflow, SOURCE_NODE)
+        else:
+            # TODO parser couldn't make sense of it; keep the raw graphs at least
+            store_workflow(cur, asset_id, workflow, promptflow, SOURCE_NODE)
         conn.commit()
         """
         if tags:
@@ -142,6 +147,54 @@ async def ingest(request: Request):
         conn.close()
     
     return JSONResponse( status_code=201,content={"status": "ok", "asset_id": asset_id})
+
+@app.post("/gz/ingest_embedded")
+async def ingest_embedded(request: Request):
+    """Called by the Immich server (GadzoinksService) after Immich's own metadata
+    extraction, with the raw tags of any image that looks AI-generated. Covers
+    uploads, library scans and admin re-runs of Extract Metadata, so re-running
+    that job is the backfill. Never overrides a row the ComfyUI node wrote."""
+    body = await request.json()
+    asset_id = body.get('asset_id')
+    tags = body.get('tags') or {}
+    if not asset_id:
+        return JSONResponse(status_code=400, content={"status": "error", "error": "asset_id required"})
+
+    extracted = await extract_from_tags(tags)
+    metadata = extracted['metadata']
+    workflow, promptflow = extracted['workflow'], extracted['promptflow']
+    dprint(f"ingest_embedded {asset_id}: candidates={extracted['candidates']} "
+           f"strategy={metadata and metadata.get('strategy')}")
+    if not (metadata or workflow or promptflow):
+        return {"status": "skipped", "asset_id": asset_id, "reason": "no generation metadata"}
+
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        lock_asset(cur, asset_id)
+        cur.execute("SELECT meta_source FROM gz_asset_metadata WHERE asset_id = %s", [asset_id])
+        row = cur.fetchone()
+        if row and row['meta_source'] == SOURCE_NODE:
+            conn.commit()
+            return {"status": "skipped", "asset_id": asset_id, "reason": "node data present"}
+        if metadata:
+            parse_and_store(cur, asset_id, metadata, workflow, promptflow, SOURCE_EMBEDDED)
+        else:
+            store_workflow(cur, asset_id, workflow, promptflow, SOURCE_EMBEDDED)
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        print(f"Error storing embedded metadata for {asset_id}: {e}")
+        print(traceback.format_exc())
+        return JSONResponse(status_code=500, content={"status": "error", "asset_id": asset_id, "error": str(e)})
+    finally:
+        conn.close()
+
+    return JSONResponse(status_code=201, content={
+        "status": "ok", "asset_id": asset_id,
+        "strategy": metadata.get('strategy') if metadata else None,
+        "app": metadata.get('app') if metadata else None,
+    })
 
 @app.get("/gz/assets/{asset_id}/meta")
 async def get_meta(asset_id: str):
@@ -429,50 +482,54 @@ def ensure_schema():
         print(f"Schema check failed: {e}")
         raise   # fail fast on startup if DB unreachable
 
-def store_workflow(app,asset_id,workflow , promptflow):
-    if workflow or promptflow:
-        conn = get_connection()
-        try:
-            cur = conn.cursor()
-            # minimal metadata row so foreign key for workflow table is satisfied
-            cur.execute("""
-                INSERT INTO gz_asset_metadata (asset_id, app)
-                VALUES (%s, %s)
-                ON CONFLICT (asset_id) DO NOTHING
-            """, [asset_id, 'ComfyUI'])
-            
-            if workflow:
-                cur.execute("""
-                    INSERT INTO gz_workflow (asset_id, workflow)
-                    VALUES (%s, %s::jsonb)
-                    ON CONFLICT (asset_id) DO UPDATE SET workflow=EXCLUDED.workflow
-                """, [asset_id, json.dumps(workflow)])
-            
-            if promptflow:
-                cur.execute("""
-                    INSERT INTO gz_promptflow (asset_id, promptflow)
-                    VALUES (%s, %s::jsonb)
-                    ON CONFLICT (asset_id) DO UPDATE SET promptflow=EXCLUDED.promptflow
-                """, [asset_id, json.dumps(promptflow)])
-            
-            conn.commit()
-            cur.close()
-        except Exception as e:
-            conn.rollback()
-            print(f"Error storing workflow for {asset_id}: {e}")
-            print(traceback.format_exc())
-        finally:
-            conn.close()
+def lock_asset(cur, asset_id: str):
+    """Serialise the node ingest and the embedded ingest for one asset. Both fire
+    within a second of each other when the node uploads a PNG that also carries
+    its workflow. Released automatically at commit/rollback."""
+    cur.execute("SELECT pg_advisory_xact_lock(hashtext(%s))", [str(asset_id)])
 
-def parse_and_store(cur, asset_id: str, meta: dict, workflow: dict, promptflow: dict):
-    # 1. insert core metadata
+def _store_graphs(cur, asset_id: str, workflow, promptflow):
+    if workflow:
+        cur.execute("""
+            INSERT INTO gz_workflow (asset_id, workflow)
+            VALUES (%s, %s::jsonb)
+            ON CONFLICT (asset_id) DO UPDATE SET workflow=EXCLUDED.workflow
+        """, [asset_id, json.dumps(workflow)])
+    if promptflow:
+        cur.execute("""
+            INSERT INTO gz_promptflow (asset_id, promptflow)
+            VALUES (%s, %s::jsonb)
+            ON CONFLICT (asset_id) DO UPDATE SET promptflow=EXCLUDED.promptflow
+        """, [asset_id, json.dumps(promptflow)])
+
+def store_workflow(cur, asset_id: str, workflow, promptflow, meta_source: str):
+    """Keep the raw graphs when the parser got nothing usable out of them."""
+    if not (workflow or promptflow):
+        return
+    # minimal metadata row so foreign key for workflow table is satisfied
+    cur.execute("""
+        INSERT INTO gz_asset_metadata (asset_id, app, meta_source)
+        VALUES (%s, %s, %s)
+        ON CONFLICT (asset_id) DO NOTHING
+    """, [asset_id, 'ComfyUI', meta_source])
+    _store_graphs(cur, asset_id, workflow, promptflow)
+
+def parse_and_store(cur, asset_id: str, meta: dict, workflow: dict, promptflow: dict,
+                    meta_source: str):
+    # 1. insert core metadata; a re-ingest replaces the whole row, not just prompt/model,
+    #    so an embedded row later superseded by the node can't leave stale fields behind
     cur.execute("""
         INSERT INTO gz_asset_metadata
             (asset_id, prompt, negative_prompt, model, seed, steps, cfg,
-             sampler_name, width, height, app,source_host,scheduler)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+             sampler_name, width, height, app, source_host, scheduler, meta_source)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         ON CONFLICT (asset_id) DO UPDATE SET
-            prompt=EXCLUDED.prompt, model=EXCLUDED.model
+            prompt=EXCLUDED.prompt, negative_prompt=EXCLUDED.negative_prompt,
+            model=EXCLUDED.model, seed=EXCLUDED.seed, steps=EXCLUDED.steps,
+            cfg=EXCLUDED.cfg, sampler_name=EXCLUDED.sampler_name,
+            width=EXCLUDED.width, height=EXCLUDED.height, app=EXCLUDED.app,
+            source_host=EXCLUDED.source_host, scheduler=EXCLUDED.scheduler,
+            meta_source=EXCLUDED.meta_source
     """, [
         asset_id,
         meta.get('prompt'),
@@ -487,7 +544,9 @@ def parse_and_store(cur, asset_id: str, meta: dict, workflow: dict, promptflow: 
         meta.get('app'),
         meta.get('source_host'),
         meta.get('scheduler'),
+        meta_source,
         ])
+    cur.execute("DELETE FROM gz_asset_lora WHERE asset_id = %s", [asset_id])
 
     # 2. parse loras from the messy lora1/lora2/lora3 structure
     loras = []
@@ -520,20 +579,8 @@ def parse_and_store(cur, asset_id: str, meta: dict, workflow: dict, promptflow: 
             VALUES (%s, %s, %s)
             ON CONFLICT (asset_id, lora_id) DO UPDATE SET strength=EXCLUDED.strength
         """, [asset_id, lora_id, strength])
-    # store workflow
-    if workflow:
-        cur.execute("""
-		    INSERT INTO gz_workflow (asset_id, workflow)
-		    VALUES (%s, %s::jsonb)
-		    ON CONFLICT (asset_id) DO UPDATE SET workflow=EXCLUDED.workflow
-		""", [asset_id, json.dumps(workflow)])
-    # store promptflow
-    if promptflow:
-        cur.execute("""
-		    INSERT INTO gz_promptflow (asset_id, promptflow)
-		    VALUES (%s, %s::jsonb)
-		    ON CONFLICT (asset_id) DO UPDATE SET promptflow=EXCLUDED.promptflow
-        """, [asset_id, json.dumps(promptflow)])
+    # 4. raw graphs (makes "Download workflow" work for imported images too)
+    _store_graphs(cur, asset_id, workflow, promptflow)
 
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS gz_architecture (
@@ -619,6 +666,11 @@ CREATE TABLE IF NOT EXISTS gz_promptflow (
     promptflow  JSONB,
     created_at  TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- who wrote the row: 'gadzoinks' (ComfyUI node) or 'embedded' (parsed from the file)
+ALTER TABLE gz_asset_metadata ADD COLUMN IF NOT EXISTS meta_source TEXT;
+-- every row written before this column existed came from the node
+UPDATE gz_asset_metadata SET meta_source = 'gadzoinks' WHERE meta_source IS NULL;
 """
 
 
