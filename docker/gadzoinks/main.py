@@ -266,6 +266,9 @@ async def search_assets(request: Request):
     lora         = body.get('lora')
     architecture = body.get('architecture')
     asset_ids    = body.get('asset_ids')
+    # capture-date window (ISO 8601, inclusive), matched against Immich's asset."fileCreatedAt"
+    taken_after  = body.get('taken_after')
+    taken_before = body.get('taken_before')
     page         = body.get('page', 1)
     size         = body.get('size', 50)
     offset       = (page - 1) * size
@@ -309,14 +312,30 @@ async def search_assets(request: Request):
                 conditions.append("l.name ILIKE %s")
                 params.append(f'%{lora}%')
 
+            date_conditions, date_params = date_filter()
+            conditions += date_conditions
+            params += date_params
+
             arch_join = "LEFT JOIN gz_architecture a ON a.id = m.architecture_id" if architecture else ""
             lora_join = """
                 LEFT JOIN gz_asset_lora al ON al.asset_id = m.asset_id
                 LEFT JOIN gz_lora l ON l.id = al.lora_id
             """ if lora else ""
+            if date_conditions:
+                arch_join += ' JOIN asset ast ON ast.id = m.asset_id'
 
             where = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''
             return arch_join, lora_join, where, params
+
+        def date_filter():
+            conditions, params = [], []
+            if taken_after:
+                conditions.append('ast."fileCreatedAt" >= %s::timestamptz')
+                params.append(taken_after)
+            if taken_before:
+                conditions.append('ast."fileCreatedAt" <= %s::timestamptz')
+                params.append(taken_before)
+            return conditions, params
 
         def run_query(arch_join, lora_join, where, params):
             # count
@@ -373,6 +392,9 @@ async def search_assets(request: Request):
             if lora:
                 or_conditions.append("l.name ILIKE %s")
                 or_params.append(f'%{lora}%')
+            date_conditions, date_params = date_filter()
+            or_conditions += date_conditions
+            or_params += date_params
 
             or_where = ('WHERE ' + ' AND '.join(or_conditions)) if or_conditions else ''
             total, ids = run_query(arch_join, lora_join, or_where, or_params)
