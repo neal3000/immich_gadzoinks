@@ -26,3 +26,11 @@ If you want to configure custom information of the server, including the databas
 
   3. Finally, bring the containers back up with the command 'docker compose up --remove-orphans -d' in the immich-app directory
 
+ 1678  mise dev
+ 1679  docker compose -f docker/docker-compose.dev.yml logs -f
+ 1680  docker ps -a                 # are any immich containers running or exited?
+ 1681  docker compose ls -a         # which compose projects exist, and from which files
+ 1682  mise tasks info dev          # the exact command mise dev runs
+ 1683  cd docker/
+ 1684  COMPOSE_BAKE=true docker compose -f ./docker-compose.dev.yml up -d --remove-orphans
+ 1686  docker compose -f ./docker-compose.dev.yml logs -f

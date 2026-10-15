@@ -94,6 +94,21 @@ def extract_last_part(text: Any) -> str:
     parts = name.replace('\\', '/').split('/')
     return parts[-1] if parts else ""
 
+# GPrompts, GPromptsEnhanced, and any later node of that family (but not the
+# GPromptEnhancer* loaders). Each writes its final prompt into its own node of
+# the prompt graph at run time: inputs.computed_prompt and _meta.computed_prompt.
+def is_gprompts(ct: Any) -> bool:
+    return isinstance(ct, str) and ct.startswith('GPrompts')
+
+def gprompts_prompt(node: Dict) -> Optional[str]:
+    """computed_prompt (what was actually used); the typed text only if it never ran."""
+    meta = node.get('_meta') or {}
+    inputs = node.get('inputs') or {}
+    for v in (meta.get('computed_prompt'), inputs.get('computed_prompt'), inputs.get('text')):
+        if isinstance(v, str) and not is_bad_prompt(v):
+            return v
+    return None
+
 def is_ref(value: Any) -> bool:
     return isinstance(value, list) and len(value) == 2 and isinstance(value[0], str)
 
@@ -202,14 +217,8 @@ def trace_text(ref: Any, pf: Dict, visited: set = None) -> Optional[str]:
         if is_ref(text):
             return trace_text(text, pf, visited)
 
-    if ct == 'GPrompts':
-        computed = (node.get('_meta', {}).get('computed_prompt') or
-                    inputs.get('computed_prompt'))
-        if computed and isinstance(computed, str):
-            return computed
-        text = inputs.get('text')
-        if isinstance(text, str) and not is_bad_prompt(text):
-            return text
+    if is_gprompts(ct):
+        return gprompts_prompt(node)
     if ct in ('StringConcatenate', 'CR Text Concatenate', 'StringJoin'):
         delimiter = inputs.get('delimiter', '')
         parts = []
@@ -448,8 +457,36 @@ def trace_cfg(ref: Any, pf: Dict) -> Optional[float]:
         return trace_cfg(upstream, pf)
     return None
 
+def seed_value(val: Any, pf: Dict, visited: set = None) -> Optional[str]:
+    """A seed that may be a number or a link, e.g. RandomNoise.noise_seed = ["40", 3]
+    (output 3 of GPrompts / GPromptsEnhanced is its seed). Follows links."""
+    if val is None or isinstance(val, bool):
+        return None
+    if not is_ref(val):
+        try:
+            return str(int(val))
+        except (TypeError, ValueError):
+            print(f"seed_value: could not convert seed={val!r}")
+            return None
+    if visited is None:
+        visited = set()
+    node_id = str(val[0])
+    node = resolve_ref(val, pf)
+    if not node or node_id in visited:
+        return None
+    visited.add(node_id)
+    ct = node.get('class_type', '')
+    inputs = node.get('inputs', {})
+    if ct in PRIMITIVE_NODES or ct == 'ComfySwitchNode':
+        return seed_value(trace_primitive(val, pf), pf, visited)
+    for key in ('seed', 'noise_seed', 'value'):
+        if key in inputs:
+            return seed_value(inputs[key], pf, visited)
+    print(f"seed_value: no seed on node {node_id} ct:{ct}")
+    return None
+
 def trace_seed(ref: Any, pf: Dict) -> Optional[str]:
-    """Trace noise ref → RandomNoise / GPrompts → seed."""
+    """Trace noise ref → RandomNoise / GPrompts family → seed."""
     node = resolve_ref(ref, pf)
     if not node:
         return None
@@ -457,30 +494,10 @@ def trace_seed(ref: Any, pf: Dict) -> Optional[str]:
     inputs = node.get('inputs', {})
 
     if ct == 'RandomNoise':
-        seed = inputs.get('noise_seed') or inputs.get('seed')
-        if seed is not None:
-            if is_ref(seed):
-                print(f"trace_seed: RandomNoise seed is a ref {seed}, cannot resolve")
-                return None
-            try:
-                return str(int(seed))
-            except (TypeError, ValueError) as e:
-                print(f"trace_seed: RandomNoise could not convert seed={seed!r}: {e}")
-                return None
-
-    if ct == 'GPrompts':
-        seed = inputs.get('seed')
-        if seed is not None:
-            if is_ref(seed):
-                print(f"trace_seed: GPrompts seed is a ref {seed}, cannot resolve")
-                return None
-            try:
-                return str(int(seed))
-            except (TypeError, ValueError) as e:
-                print(f"trace_seed: GPrompts could not convert seed={seed!r}: {e}")
-                return None
+        return seed_value(inputs.get('noise_seed', inputs.get('seed')), pf, {str(ref[0])})
+    if is_gprompts(ct):
+        return seed_value(inputs.get('seed'), pf, {str(ref[0])})
     print(f"trace_seed: could not parse ct:{ct}")
-
     return None
 
 
@@ -560,11 +577,10 @@ def parse_promptflow(pf: Dict) -> Optional[Dict[str, Any]]:
 
         if sampler_type in ('KSampler', 'KSamplerAdvanced'):
             # seed — may be direct or ref
-            seed_val = inputs.get('seed') or inputs.get('noise_seed')
-            if is_ref(seed_val):
-                result['seed'] = trace_seed(seed_val, pf)
-            elif seed_val is not None:
-                result['seed'] = str(int(seed_val))
+            seed_val = inputs.get('seed')
+            if seed_val is None:
+                seed_val = inputs.get('noise_seed')
+            result['seed'] = seed_value(seed_val, pf)
             steps_val = inputs.get('steps')
             if is_ref(steps_val):
                 result['steps'] = trace_primitive(steps_val, pf)
@@ -649,18 +665,22 @@ def parse_promptflow(pf: Dict) -> Optional[Dict[str, Any]]:
                         m = trace_model(model_ref, pf)
                         if m: result['model'] = extract_last_part(m)
 
-    # GPrompts override for prompt
+    # GPrompts family override for prompt
     for node_id, node in pf.items():
-        if isinstance(node, dict) and node.get('class_type') == 'GPrompts':
+        if isinstance(node, dict) and is_gprompts(node.get('class_type')):
             computed = (node.get('_meta', {}).get('computed_prompt') or
                         node.get('inputs', {}).get('computed_prompt'))
-            if computed:
+            if isinstance(computed, str) and not is_bad_prompt(computed):
                 result['prompt'] = computed
+            elif is_bad_prompt(result.get('prompt')):
+                fallback = gprompts_prompt(node)
+                if fallback:
+                    result['prompt'] = fallback
             # seed from GPrompts if not found
             if is_bad_seed(result.get('seed')):
-                seed = node.get('inputs', {}).get('seed')
+                seed = seed_value(node.get('inputs', {}).get('seed'), pf, {str(node_id)})
                 if seed is not None:
-                    result['seed'] = str(int(seed))
+                    result['seed'] = seed
             break
 
     # dimensions fallback — scan all latent nodes
@@ -874,8 +894,10 @@ def convert_workflow_to_promptflow(workflow: Dict[str, Any]) -> Optional[Dict[st
                 pf_node['inputs'][f'strength_0{n}']  = widgets[i + 1]
                 n += 1; i += 2
 
-        # GPrompts
-        elif node_type == 'GPrompts':
+        # GPrompts family. The UI keeps the last run's prompt in properties._meta.
+        # Widget order: GPrompts [text, seed, ...];
+        # GPromptsEnhanced [text, trigger_words, delimiter_style, seed, ...].
+        elif is_gprompts(node_type):
             props = node.get('properties', {})
             meta  = props.get('_meta', {})
             computed = meta.get('computed_prompt') or meta.get('computed_result')
@@ -884,8 +906,10 @@ def convert_workflow_to_promptflow(workflow: Dict[str, Any]) -> Optional[Dict[st
                 pf_node['inputs']['computed_prompt'] = computed
             if widgets:
                 pf_node['inputs'].setdefault('text', widgets[0])
-            if len(widgets) > 1:
-                pf_node['inputs'].setdefault('seed', widgets[1])
+            seed_idx = 3 if node_type == 'GPromptsEnhanced' else 1
+            if len(widgets) > seed_idx and isinstance(widgets[seed_idx], int) \
+                    and not isinstance(widgets[seed_idx], bool):
+                pf_node['inputs'].setdefault('seed', widgets[seed_idx])
 
         # Text pass-through nodes — last widget is computed value
         elif node_type in TEXT_PASSTHROUGH_NODES and widgets:
