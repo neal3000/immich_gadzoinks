@@ -1,5 +1,6 @@
 # gadzoinks/main.py
 import json
+import math
 import re
 import psycopg2
 import psycopg2.extras
@@ -510,19 +511,38 @@ def lock_asset(cur, asset_id: str):
     its workflow. Released automatically at commit/rollback."""
     cur.execute("SELECT pg_advisory_xact_lock(hashtext(%s))", [str(asset_id)])
 
+def json_safe(obj):
+    """Make a graph storable as jsonb. ComfyUI adds an "is_changed" entry to each
+    prompt node and writes it into the PNG; nodes that always re-run report NaN
+    there, which Python's json.dumps emits as a bare NaN token that Postgres
+    rejects. That entry is execution-cache bookkeeping, so it is dropped, and any
+    other non-finite float becomes null. Same rule as the node pack's
+    immich_importer.json_safe, so both ingest paths store the same graph."""
+    if isinstance(obj, dict):
+        return {k: json_safe(v) for k, v in obj.items() if k != "is_changed"}
+    if isinstance(obj, (list, tuple)):
+        return [json_safe(v) for v in obj]
+    if isinstance(obj, float) and not math.isfinite(obj):
+        return None
+    return obj
+
+def _dump_graph(graph):
+    # allow_nan=False: anything json_safe missed fails here, not in Postgres
+    return json.dumps(json_safe(graph), allow_nan=False)
+
 def _store_graphs(cur, asset_id: str, workflow, promptflow):
     if workflow:
         cur.execute("""
             INSERT INTO gz_workflow (asset_id, workflow)
             VALUES (%s, %s::jsonb)
             ON CONFLICT (asset_id) DO UPDATE SET workflow=EXCLUDED.workflow
-        """, [asset_id, json.dumps(workflow)])
+        """, [asset_id, _dump_graph(workflow)])
     if promptflow:
         cur.execute("""
             INSERT INTO gz_promptflow (asset_id, promptflow)
             VALUES (%s, %s::jsonb)
             ON CONFLICT (asset_id) DO UPDATE SET promptflow=EXCLUDED.promptflow
-        """, [asset_id, json.dumps(promptflow)])
+        """, [asset_id, _dump_graph(promptflow)])
 
 def store_workflow(cur, asset_id: str, workflow, promptflow, meta_source: str):
     """Keep the raw graphs when the parser got nothing usable out of them."""
