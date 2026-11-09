@@ -53,11 +53,14 @@ class SearchManager {
     let gz: SearchFilter['gz'] = { prompt: '', model: '', lora: '', architecture: '' };
     const sq = searchQuery as any;
     if (sq.gzPrompt || sq.gzModel || sq.gzLora || sq.gzArchitecture) {
+      // For AI searches the search box holds the prompt; the filter panel's prompt
+      // field starts empty so the two aren't sent twice.
+      query = sq.gzPrompt ?? '';
       gz = {
-        prompt: sq.gzPrompt,
-        model: sq.gzModel,
-        lora: sq.gzLora,
-        architecture: sq.gzArchitecture,
+        prompt: '',
+        model: sq.gzModel ?? '',
+        lora: sq.gzLora ?? '',
+        architecture: sq.gzArchitecture ?? '',
       };
       queryType = QueryType.GZ;
     }
@@ -115,6 +118,20 @@ class SearchManager {
 
     const query = this.filter.query || undefined;
 
+    // AI search terms. The prompt can be typed in the search box (with the AI type
+    // selected) and/or in the filter panel's "Prompt contains"; both are combined
+    // (the sidecar ANDs comma-separated terms). The AI fields are sent whenever any
+    // is set, so filling the panel works even if the type selector wasn't switched.
+    const gz = this.filter.gz ?? { prompt: '', model: '', lora: '', architecture: '' };
+    const promptParts = [this.filter.queryType === 'gz' ? query : undefined, gz.prompt]
+      .map((part) => (part ?? '').trim())
+      .filter((part, index, all) => part && all.indexOf(part) === index);
+    const gzPrompt = promptParts.join(', ') || undefined;
+    const hasGz = Boolean(gzPrompt || gz.model || gz.lora || gz.architecture);
+    if (this.filter.queryType === 'gz' && !hasGz) {
+      console.warn('[gz-search] AI search submitted with no prompt, model, LoRA or architecture');
+    }
+
     return {
       query: this.filter.queryType === 'smart' ? query : undefined,
       queryAssetId: this.filter.queryAssetId || undefined,
@@ -141,12 +158,12 @@ class SearchManager {
       tagIds: this.filter.tagIds === null ? null : this.filter.tagIds.size > 0 ? [...this.filter.tagIds] : undefined,
       type,
       rating: this.filter.rating,
-      ...(this.filter.queryType === 'gz'
+      ...(hasGz
         ? {
-            gzPrompt: this.filter.gz?.prompt || undefined,
-            gzModel: this.filter.gz?.model || undefined,
-            gzLora: this.filter.gz?.lora || undefined,
-            gzArchitecture: this.filter.gz?.architecture || undefined,
+            gzPrompt,
+            gzModel: gz.model || undefined,
+            gzLora: gz.lora || undefined,
+            gzArchitecture: gz.architecture || undefined,
           }
         : {}),
     };

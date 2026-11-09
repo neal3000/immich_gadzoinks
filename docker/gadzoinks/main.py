@@ -29,8 +29,9 @@ app.add_middleware(
 )
 
 def dprint(s):
-    print(s)
-    pass
+    # flush: Docker doesn't give Python a terminal, so unflushed prints can sit in a
+    # buffer and never reach `docker logs`.
+    print(s, flush=True)
 
 def apply_tags(asset_id: str, tags: list, cur):
     """Write tags to XMP sidecar via Immich API."""
@@ -274,6 +275,13 @@ async def search_assets(request: Request):
     size         = body.get('size', 50)
     offset       = (page - 1) * size
 
+    dprint(f"gz search: prompt={prompt!r} model={model!r} lora={lora!r} architecture={architecture!r} "
+           f"asset_ids={None if asset_ids is None else len(asset_ids)} "
+           f"taken={taken_after or '-'}..{taken_before or '-'} page={page} size={size}")
+    if not any([prompt, model, lora, architecture, asset_ids is not None, taken_after, taken_before]):
+        dprint("gz search: WARNING no filters at all, so every AI asset matches. "
+               "If this came from the web UI, the prompt didn't reach the request.")
+
     conn = get_connection()
     cur = conn.cursor()
     try:
@@ -413,6 +421,9 @@ async def search_assets(request: Request):
             "strategy": strategy,
         }
 
+    except Exception:
+        dprint(f"gz search: FAILED\n{traceback.format_exc()}")
+        raise
     finally:
         cur.close()
         conn.close()

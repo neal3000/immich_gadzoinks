@@ -138,15 +138,20 @@
 
     const { gzPrompt, gzModel, gzLora, gzArchitecture, ...immichTerms } = terms as any;
 
-    try {
-      if (searchManager.filter.queryType === 'gz') {
-        const hasGzFilters = gzPrompt || gzModel || gzLora || gzArchitecture;
+    // Decided by what's in the URL, not by the remembered search type: an AI search
+    // with nothing to search for would otherwise ask the sidecar for every AI image.
+    const hasGzFilters = Boolean(gzPrompt || gzModel || gzLora || gzArchitecture);
+    const hasImmichFilters = Object.keys(immichTerms).some(
+      (k) => !['page', 'withExif', 'query', 'queryAssetId'].includes(k) && immichTerms[k] !== undefined,
+    );
 
+    try {
+      if (!hasGzFilters && searchManager.filter.queryType === 'gz' && !hasImmichFilters) {
+        console.warn('[gz-search] AI search with no terms; not searching', { terms });
+        nextPage = 0;
+      } else if (hasGzFilters) {
         // Step 1: if any standard Immich filters are present, page through them first
         let immichIds: string[] | undefined;
-        const hasImmichFilters = Object.keys(immichTerms).some(
-          (k) => !['page', 'withExif', 'query', 'queryAssetId'].includes(k) && immichTerms[k] !== undefined,
-        );
 
         if (hasGzFilters && hasImmichFilters) {
           let page = 1;
@@ -162,19 +167,33 @@
         }
 
         // Step 2: GZ search, optionally filtered by Immich IDs
-        const gzResponse = await fetch('/gz/search', {
+        const gzRequest = {
+          prompt: gzPrompt,
+          model: gzModel,
+          lora: gzLora,
+          architecture: gzArchitecture,
+          asset_ids: immichIds,
+          page: nextPage,
+          size: 50,
+        };
+        console.info('[gz-search] request', { ...gzRequest, asset_ids: immichIds?.length });
+        const response = await fetch('/gz/search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: gzPrompt,
-            model: gzModel,
-            lora: gzLora,
-            architecture: gzArchitecture,
-            asset_ids: immichIds,
-            page: nextPage,
-            size: 50,
-          }),
-        }).then((r) => r.json());
+          body: JSON.stringify(gzRequest),
+        });
+        if (!response.ok) {
+          const detail = await response.text().catch(() => '');
+          console.error('[gz-search] sidecar error', response.status, detail);
+          throw new Error(`AI search failed (HTTP ${response.status}) ${detail.slice(0, 200)}`);
+        }
+        const gzResponse = await response.json();
+        console.info('[gz-search] response', {
+          total: gzResponse.total,
+          strategy: gzResponse.strategy,
+          returned: gzResponse.asset_ids?.length ?? 0,
+          nextPage: gzResponse.next_page,
+        });
 
         const gzIds: string[] = gzResponse.asset_ids ?? [];
 
