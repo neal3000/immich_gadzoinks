@@ -1,5 +1,5 @@
 # immich_gadzoinks
-Switch to the immich_gadzoinks branch. Nothing in this branch.  
+Switch to the immich_gadzoinks_v3 branch. Nothing in this branch.  
 
 Look at README_GADZOINKS.md  
 
