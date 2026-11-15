@@ -150,11 +150,16 @@ git clone https://github.com/neal3000/immich_gadzoinks.git immich-dev
 cd immich-dev
 git checkout immich_gadzoinks
 
-edit these values , is DB_DATA_LOCATION used ?
+cp docker/example.env docker/.env
+edit these values in .env , is DB_DATA_LOCATION used ?
+# gazdoinks is the container name for custom code
+GADZOINKS_URL=http://gadzoinks:2289
 UPLOAD_LOCATION=/opt/library
 DB_DATA_LOCATION=/opt/postgres
 vi docker/.env
 
+use mise to build
+mise dev
 
 cd docker/
 docker compose -f docker-compose.dev.yml up immich-server immich-web database redis -d
@@ -183,7 +188,7 @@ sudo systemctl enable caddy
 
 docker compose -f docker-compose.dev.yml up -d gadzoinks
 cd ~/immich-dev
-make dev
+mise dev
 
 test with web server http://localhost:2281
 test with comfyui
