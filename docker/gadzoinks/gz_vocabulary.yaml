@@ -1,0 +1,1461 @@
+# General tagging vocabulary, assembled from published label spaces.
+# Built by build_vocabulary.py — see that file for sources and for
+# what was deliberately left out (ImageNet-1k, IPTC subject codes).
+#
+# No term here came from any particular photo library.
+#
+# 1155 terms:
+#     365  Places365
+#     601  Open Images V4 boxable
+#     102  SUN scene attributes
+#      87  curated enumerations
+
+root: ai
+drop_categories: [rating]
+unlisted: drop
+
+labels:
+
+  # -- place: Places365 (365 terms)
+  airfield:                          place/airfield
+  airplane cabin:                    place/airplane-cabin
+  airport terminal:                  place/airport-terminal
+  alcove:                            place/alcove
+  alley:                             place/alley
+  amphitheater:                      place/amphitheater
+  amusement arcade:                  place/amusement-arcade
+  amusement park:                    place/amusement-park
+  aquarium:                          place/aquarium
+  aqueduct:                          place/aqueduct
+  arcade:                            place/arcade
+  arch:                              place/arch
+  archaelogical excavation:          place/archaelogical-excavation
+  archive:                           place/archive
+  army base:                         place/army-base
+  art gallery:                       place/art-gallery
+  art school:                        place/art-school
+  art studio:                        place/art-studio
+  artists loft:                      place/artists-loft
+  asia temple:                       place/temple/asia
+  assembly line:                     place/assembly-line
+  attic:                             place/attic
+  auditorium:                        place/auditorium
+  auto factory:                      place/auto-factory
+  auto showroom:                     place/auto-showroom
+  badlands:                          place/badlands
+  ball pit:                          place/ball-pit
+  ballroom:                          place/ballroom
+  bamboo forest:                     place/bamboo-forest
+  bank vault:                        place/bank-vault
+  banquet hall:                      place/banquet-hall
+  bar:                               place/bar
+  barn:                              place/barn
+  barndoor:                          place/barndoor
+  baseball field:                    place/baseball-field
+  baseball stadium:                  place/stadium/baseball
+  basement:                          place/basement
+  bathroom:                          place/bathroom
+  beach:                             place/beach
+  beach house:                       place/beach-house
+  beauty salon:                      place/beauty-salon
+  bedchamber:                        place/bedchamber
+  bedroom:                           place/bedroom
+  beer garden:                       place/beer-garden
+  beer hall:                         place/beer-hall
+  berth:                             place/berth
+  biology laboratory:                place/biology-laboratory
+  boardwalk:                         place/boardwalk
+  boat deck:                         place/boat-deck
+  boathouse:                         place/boathouse
+  bookstore:                         place/bookstore
+  botanical garden:                  place/botanical-garden
+  bowling alley:                     place/bowling-alley
+  boxing ring:                       place/boxing-ring
+  bridge:                            place/bridge
+  broadleaf forest:                  place/forest/broadleaf
+  building facade:                   place/building-facade
+  bullring:                          place/bullring
+  burial chamber:                    place/burial-chamber
+  bus interior:                      place/bus-interior
+  butchers shop:                     place/butchers-shop
+  butte:                             place/butte
+  cafeteria:                         place/cafeteria
+  campsite:                          place/campsite
+  campus:                            place/campus
+  candy store:                       place/candy-store
+  canyon:                            place/canyon
+  car interior:                      place/car-interior
+  carrousel:                         place/carrousel
+  castle:                            place/castle
+  catacomb:                          place/catacomb
+  cemetery:                          place/cemetery
+  chalet:                            place/chalet
+  chemistry lab:                     place/chemistry-lab
+  childs room:                       place/childs-room
+  classroom:                         place/classroom
+  clean room:                        place/clean-room
+  cliff:                             place/cliff
+  closet:                            place/closet
+  clothing store:                    place/clothing-store
+  coast:                             place/coast
+  cockpit:                           place/cockpit
+  coffee shop:                       place/coffee-shop
+  computer room:                     place/computer-room
+  conference center:                 place/conference-center
+  conference room:                   place/conference-room
+  construction site:                 place/construction-site
+  corn field:                        place/corn-field
+  corral:                            place/corral
+  corridor:                          place/corridor
+  cottage:                           place/cottage
+  courthouse:                        place/courthouse
+  courtyard:                         place/courtyard
+  creek:                             place/creek
+  crevasse:                          place/crevasse
+  crosswalk:                         place/crosswalk
+  cultivated field:                  place/field/cultivated
+  dam:                               place/dam
+  delicatessen:                      place/delicatessen
+  department store:                  place/department-store
+  desert road:                       place/desert-road
+  dining hall:                       place/dining-hall
+  dining room:                       place/dining-room
+  discotheque:                       place/discotheque
+  door elevator:                     place/elevator/door
+  dorm room:                         place/dorm-room
+  downtown:                          place/downtown
+  dressing room:                     place/dressing-room
+  driveway:                          place/driveway
+  drugstore:                         place/drugstore
+  elevator lobby:                    place/elevator-lobby
+  elevator shaft:                    place/elevator-shaft
+  embassy:                           place/embassy
+  engine room:                       place/engine-room
+  entrance hall:                     place/entrance-hall
+  excavation:                        place/excavation
+  exterior balcony:                  place/balcony/exterior
+  exterior gazebo:                   place/gazebo/exterior
+  fabric store:                      place/fabric-store
+  farm:                              place/farm
+  fastfood restaurant:               place/fastfood-restaurant
+  field road:                        place/field-road
+  fire escape:                       place/fire-escape
+  fire station:                      place/fire-station
+  fishpond:                          place/fishpond
+  food court:                        place/food-court
+  football field:                    place/football-field
+  football stadium:                  place/stadium/football
+  forest path:                       place/forest-path
+  forest road:                       place/forest-road
+  formal garden:                     place/formal-garden
+  fountain:                          place/fountain
+  galley:                            place/galley
+  gas station:                       place/gas-station
+  gift shop:                         place/gift-shop
+  glacier:                           place/glacier
+  golf course:                       place/golf-course
+  grotto:                            place/grotto
+  harbor:                            place/harbor
+  hardware store:                    place/hardware-store
+  hayfield:                          place/hayfield
+  heliport:                          place/heliport
+  highway:                           place/highway
+  hockey arena:                      place/arena/hockey
+  home office:                       place/home-office
+  home theater:                      place/home-theater
+  hospital:                          place/hospital
+  hospital room:                     place/hospital-room
+  hot spring:                        place/hot-spring
+  hotel room:                        place/hotel-room
+  house:                             place/house
+  ice cream parlor:                  place/ice-cream-parlor
+  ice floe:                          place/ice-floe
+  ice shelf:                         place/ice-shelf
+  iceberg:                           place/iceberg
+  igloo:                             place/igloo
+  indoor basketball court:           place/basketball-court/indoor
+  indoor bazaar:                     place/bazaar/indoor
+  indoor booth:                      place/booth/indoor
+  indoor bow window:                 place/bow-window/indoor
+  indoor bus station:                place/bus-station/indoor
+  indoor church:                     place/church/indoor
+  indoor escalator:                  place/escalator/indoor
+  indoor flea market:                place/flea-market/indoor
+  indoor florist shop:               place/florist-shop/indoor
+  indoor garage:                     place/garage/indoor
+  indoor general store:              place/general-store/indoor
+  indoor greenhouse:                 place/greenhouse/indoor
+  indoor gymnasium:                  place/gymnasium/indoor
+  indoor hangar:                     place/hangar/indoor
+  indoor ice skating rink:           place/ice-skating-rink/indoor
+  indoor jacuzzi:                    place/jacuzzi/indoor
+  indoor library:                    place/library/indoor
+  indoor market:                     place/market/indoor
+  indoor movie theater:              place/movie-theater/indoor
+  indoor museum:                     place/museum/indoor
+  indoor parking garage:             place/parking-garage/indoor
+  indoor pub:                        place/pub/indoor
+  indoor shopping mall:              place/shopping-mall/indoor
+  indoor stage:                      place/stage/indoor
+  indoor swimming pool:              place/swimming-pool/indoor
+  industrial area:                   place/industrial-area
+  interior balcony:                  place/balcony/interior
+  islet:                             place/islet
+  jail cell:                         place/jail-cell
+  japanese garden:                   place/japanese-garden
+  jewelry shop:                      place/jewelry-shop
+  junkyard:                          place/junkyard
+  kasbah:                            place/kasbah
+  kindergarden classroom:            place/kindergarden-classroom
+  kitchen:                           place/kitchen
+  lagoon:                            place/lagoon
+  landfill:                          place/landfill
+  landing deck:                      place/landing-deck
+  laundromat:                        place/laundromat
+  lawn:                              place/lawn
+  lecture room:                      place/lecture-room
+  legislative chamber:               place/legislative-chamber
+  lighthouse:                        place/lighthouse
+  living room:                       place/living-room
+  loading dock:                      place/loading-dock
+  lobby:                             place/lobby
+  lock chamber:                      place/lock-chamber
+  locker room:                       place/locker-room
+  mansion:                           place/mansion
+  manufactured home:                 place/manufactured-home
+  marsh:                             place/marsh
+  martial arts gym:                  place/martial-arts-gym
+  mausoleum:                         place/mausoleum
+  medina:                            place/medina
+  mezzanine:                         place/mezzanine
+  motel:                             place/motel
+  mountain:                          place/mountain
+  mountain path:                     place/mountain-path
+  mountain snowy:                    place/mountain-snowy
+  music studio:                      place/music-studio
+  natural canal:                     place/canal/natural
+  natural history museum:            place/natural-history-museum
+  natural lake:                      place/lake/natural
+  nursery:                           place/nursery
+  nursing home:                      place/nursing-home
+  oast house:                        place/oast-house
+  ocean:                             place/ocean
+  ocean deep underwater:             place/underwater/ocean-deep
+  office:                            place/office
+  office building:                   place/office-building
+  office cubicles:                   place/office-cubicles
+  oilrig:                            place/oilrig
+  operating room:                    place/operating-room
+  orchard:                           place/orchard
+  orchestra pit:                     place/orchestra-pit
+  outdoor apartment building:        place/apartment-building/outdoor
+  outdoor athletic field:            place/athletic-field/outdoor
+  outdoor bazaar:                    place/bazaar/outdoor
+  outdoor cabin:                     place/cabin/outdoor
+  outdoor church:                    place/church/outdoor
+  outdoor diner:                     place/diner/outdoor
+  outdoor doorway:                   place/doorway/outdoor
+  outdoor garage:                    place/garage/outdoor
+  outdoor general store:             place/general-store/outdoor
+  outdoor greenhouse:                place/greenhouse/outdoor
+  outdoor hangar:                    place/hangar/outdoor
+  outdoor hotel:                     place/hotel/outdoor
+  outdoor hunting lodge:             place/hunting-lodge/outdoor
+  outdoor ice skating rink:          place/ice-skating-rink/outdoor
+  outdoor inn:                       place/inn/outdoor
+  outdoor kennel:                    place/kennel/outdoor
+  outdoor library:                   place/library/outdoor
+  outdoor market:                    place/market/outdoor
+  outdoor mosque:                    place/mosque/outdoor
+  outdoor museum:                    place/museum/outdoor
+  outdoor parking garage:            place/parking-garage/outdoor
+  outdoor stage:                     place/stage/outdoor
+  outdoor swimming pool:             place/swimming-pool/outdoor
+  outdoor synagogue:                 place/synagogue/outdoor
+  outdoor volleyball court:          place/volleyball-court/outdoor
+  pagoda:                            place/pagoda
+  palace:                            place/palace
+  pantry:                            place/pantry
+  park:                              place/park
+  parking lot:                       place/parking-lot
+  pasture:                           place/pasture
+  patio:                             place/patio
+  pavilion:                          place/pavilion
+  performance arena:                 place/arena/performance
+  pet shop:                          place/pet-shop
+  pharmacy:                          place/pharmacy
+  phone booth:                       place/phone-booth
+  physics laboratory:                place/physics-laboratory
+  picnic area:                       place/picnic-area
+  pier:                              place/pier
+  pizzeria:                          place/pizzeria
+  platform subway station:           place/subway-station/platform
+  platform train station:            place/train-station/platform
+  playground:                        place/playground
+  playroom:                          place/playroom
+  plaza:                             place/plaza
+  pond:                              place/pond
+  porch:                             place/porch
+  promenade:                         place/promenade
+  public atrium:                     place/atrium/public
+  racecourse:                        place/racecourse
+  raceway:                           place/raceway
+  raft:                              place/raft
+  railroad track:                    place/railroad-track
+  rainforest:                        place/rainforest
+  reception:                         place/reception
+  recreation room:                   place/recreation-room
+  repair shop:                       place/repair-shop
+  residential neighborhood:          place/residential-neighborhood
+  restaurant:                        place/restaurant
+  restaurant kitchen:                place/restaurant-kitchen
+  restaurant patio:                  place/restaurant-patio
+  rice paddy:                        place/rice-paddy
+  river:                             place/river
+  rock arch:                         place/rock-arch
+  rodeo arena:                       place/arena/rodeo
+  roof garden:                       place/roof-garden
+  rope bridge:                       place/rope-bridge
+  ruin:                              place/ruin
+  runway:                            place/runway
+  sand desert:                       place/desert/sand
+  sandbox:                           place/sandbox
+  sauna:                             place/sauna
+  schoolhouse:                       place/schoolhouse
+  science museum:                    place/science-museum
+  server room:                       place/server-room
+  shed:                              place/shed
+  shoe shop:                         place/shoe-shop
+  shop bakery:                       place/bakery/shop
+  shopfront:                         place/shopfront
+  shower:                            place/shower
+  ski resort:                        place/ski-resort
+  ski slope:                         place/ski-slope
+  sky:                               sky
+  skyscraper:                        place/skyscraper
+  slum:                              place/slum
+  snowfield:                         place/snowfield
+  soccer field:                      place/soccer-field
+  soccer stadium:                    place/stadium/soccer
+  stable:                            place/stable
+  staircase:                         place/staircase
+  storage room:                      place/storage-room
+  street:                            place/street
+  supermarket:                       place/supermarket
+  sushi bar:                         place/sushi-bar
+  swamp:                             place/swamp
+  swimming hole:                     place/swimming-hole
+  television room:                   place/television-room
+  television studio:                 place/television-studio
+  throne room:                       place/throne-room
+  ticket booth:                      place/ticket-booth
+  topiary garden:                    place/topiary-garden
+  tower:                             place/tower
+  toyshop:                           place/toyshop
+  train interior:                    place/train-interior
+  tree farm:                         place/tree-farm
+  tree house:                        place/tree-house
+  trench:                            place/trench
+  tundra:                            place/tundra
+  urban canal:                       place/canal/urban
+  utility room:                      place/utility-room
+  valley:                            place/valley
+  vegetable garden:                  place/vegetable-garden
+  vegetation desert:                 place/desert/vegetation
+  veterinarians office:              place/veterinarians-office
+  viaduct:                           place/viaduct
+  village:                           place/village
+  vineyard:                          place/vineyard
+  volcano:                           place/volcano
+  waiting room:                      place/waiting-room
+  water moat:                        place/moat/water
+  water park:                        place/water-park
+  water tower:                       place/water-tower
+  waterfall:                         place/waterfall
+  watering hole:                     place/watering-hole
+  wave:                              place/wave
+  wet bar:                           place/wet-bar
+  wheat field:                       place/wheat-field
+  wild field:                        place/field/wild
+  wind farm:                         place/wind-farm
+  windmill:                          place/windmill
+  yard:                              place/yard
+  youth hostel:                      place/youth-hostel
+  zen garden:                        place/zen-garden
+
+  # -- object: Open Images V4 boxable (601 terms)
+  accordion:                         object/accordion
+  adhesive tape:                     object/adhesive-tape
+  aircraft:                          object/vehicle/aircraft
+  airplane:                          object/vehicle/airplane
+  alarm clock:                       object/alarm-clock
+  alpaca:                            object/alpaca
+  ambulance:                         object/ambulance
+  animal:                            object/animal
+  ant:                               object/ant
+  antelope:                          object/antelope
+  apple:                             object/apple
+  armadillo:                         object/armadillo
+  artichoke:                         object/artichoke
+  asparagus:                         object/asparagus
+  auto part:                         object/auto-part
+  axe:                               object/axe
+  backpack:                          object/backpack
+  bagel:                             object/bagel
+  baked goods:                       object/baked-goods
+  balance beam:                      object/balance-beam
+  ball:                              object/ball
+  balloon:                           object/balloon
+  banana:                            object/banana
+  band-aid:                          object/band-aid
+  banjo:                             object/banjo
+  barge:                             object/barge
+  barrel:                            object/barrel
+  baseball bat:                      object/baseball-bat
+  baseball glove:                    object/baseball-glove
+  bat:                               object/bat
+  bathroom accessory:                object/bathroom-accessory
+  bathroom cabinet:                  object/bathroom-cabinet
+  bathtub:                           object/bathtub
+  beaker:                            object/beaker
+  bear:                              object/bear
+  bed:                               object/bed
+  bee:                               object/bee
+  beehive:                           object/beehive
+  beer:                              object/beer
+  beetle:                            object/beetle
+  bell pepper:                       object/bell-pepper
+  belt:                              appearance/clothing/belt
+  bench:                             object/bench
+  bicycle:                           object/vehicle/bicycle
+  bicycle helmet:                    object/bicycle-helmet
+  bicycle wheel:                     object/bicycle-wheel
+  bidet:                             object/bidet
+  billboard:                         object/billboard
+  billiard table:                    object/billiard-table
+  binoculars:                        object/binoculars
+  bird:                              object/bird
+  blender:                           object/blender
+  blue jay:                          object/blue-jay
+  boat:                              object/vehicle/boat
+  bomb:                              object/bomb
+  book:                              object/book
+  bookcase:                          object/bookcase
+  boot:                              object/boot
+  bottle:                            object/bottle
+  bottle opener:                     object/bottle-opener
+  bow and arrow:                     object/bow-and-arrow
+  bowl:                              object/bowl
+  bowling equipment:                 object/bowling-equipment
+  box:                               object/box
+  boy:                               object/boy
+  brassiere:                         object/brassiere
+  bread:                             object/bread
+  briefcase:                         object/briefcase
+  broccoli:                          object/broccoli
+  bronze sculpture:                  object/bronze-sculpture
+  brown bear:                        object/brown-bear
+  building:                          object/building
+  bull:                              object/bull
+  burrito:                           object/burrito
+  bus:                               object/vehicle/bus
+  bust:                              object/bust
+  butterfly:                         object/butterfly
+  cabbage:                           object/cabbage
+  cabinetry:                         object/cabinetry
+  cake:                              object/cake
+  cake stand:                        object/cake-stand
+  calculator:                        object/calculator
+  camel:                             object/camel
+  camera:                            object/camera
+  can opener:                        object/can-opener
+  canary:                            object/canary
+  candle:                            object/candle
+  candy:                             object/candy
+  cannon:                            object/cannon
+  canoe:                             object/canoe
+  cantaloupe:                        object/cantaloupe
+  car:                               object/vehicle/car
+  carnivore:                         object/carnivore
+  carrot:                            object/carrot
+  cart:                              object/cart
+  cassette deck:                     object/cassette-deck
+  cat:                               object/cat
+  cat furniture:                     object/cat-furniture
+  caterpillar:                       object/caterpillar
+  cattle:                            object/cattle
+  ceiling fan:                       object/ceiling-fan
+  cello:                             object/cello
+  centipede:                         object/centipede
+  chainsaw:                          object/chainsaw
+  chair:                             object/chair
+  cheese:                            object/cheese
+  cheetah:                           object/cheetah
+  chest of drawers:                  object/chest-of-drawers
+  chicken:                           object/chicken
+  chime:                             object/chime
+  chisel:                            object/chisel
+  chopsticks:                        object/chopsticks
+  christmas tree:                    object/christmas-tree
+  clock:                             object/clock
+  clothing:                          object/clothing
+  coat:                              appearance/clothing/coat
+  cocktail:                          object/cocktail
+  cocktail shaker:                   object/cocktail-shaker
+  coconut:                           object/coconut
+  coffee:                            object/coffee
+  coffee cup:                        object/coffee-cup
+  coffee table:                      object/coffee-table
+  coffeemaker:                       object/coffeemaker
+  coin:                              object/coin
+  common fig:                        object/common-fig
+  computer keyboard:                 object/computer-keyboard
+  computer monitor:                  object/computer-monitor
+  computer mouse:                    object/computer-mouse
+  container:                         object/container
+  convenience store:                 object/convenience-store
+  cookie:                            object/cookie
+  cooking spray:                     object/cooking-spray
+  corded phone:                      object/corded-phone
+  cosmetics:                         object/cosmetics
+  couch:                             object/couch
+  countertop:                        object/countertop
+  cowboy hat:                        appearance/clothing/cowboy-hat
+  crab:                              object/crab
+  cream:                             object/cream
+  cricket ball:                      object/cricket-ball
+  crocodile:                         object/crocodile
+  croissant:                         object/croissant
+  crown:                             appearance/jewelry/crown
+  crutch:                            object/crutch
+  cucumber:                          object/cucumber
+  cupboard:                          object/cupboard
+  curtain:                           object/curtain
+  cutting board:                     object/cutting-board
+  dagger:                            object/dagger
+  dairy:                             object/dairy
+  deer:                              object/deer
+  desk:                              object/desk
+  dessert:                           object/dessert
+  diaper:                            object/diaper
+  dice:                              object/dice
+  digital clock:                     object/digital-clock
+  dinosaur:                          object/dinosaur
+  dishwasher:                        object/dishwasher
+  dog:                               object/dog
+  dog bed:                           object/dog-bed
+  doll:                              object/doll
+  dolphin:                           object/dolphin
+  door:                              object/door
+  door handle:                       object/door-handle
+  doughnut:                          object/doughnut
+  dragonfly:                         object/dragonfly
+  drawer:                            object/drawer
+  dress:                             appearance/clothing/dress
+  drill:                             object/drill
+  drink:                             object/drink
+  drinking straw:                    object/drinking-straw
+  drum:                              object/drum
+  duck:                              object/duck
+  dumbbell:                          object/dumbbell
+  eagle:                             object/eagle
+  earrings:                          appearance/jewelry/earrings
+  egg:                               object/egg
+  elephant:                          object/elephant
+  envelope:                          object/envelope
+  eraser:                            object/eraser
+  face powder:                       object/face-powder
+  facial tissue holder:              object/facial-tissue-holder
+  falcon:                            object/falcon
+  fashion accessory:                 object/fashion-accessory
+  fast food:                         object/fast-food
+  fax:                               object/fax
+  fedora:                            appearance/clothing/fedora
+  filing cabinet:                    object/filing-cabinet
+  fire hydrant:                      object/fire-hydrant
+  fireplace:                         object/fireplace
+  fish:                              object/fish
+  flag:                              object/flag
+  flashlight:                        object/flashlight
+  flower:                            object/flower
+  flowerpot:                         object/flowerpot
+  flute:                             object/flute
+  flying disc:                       object/flying-disc
+  food:                              object/food
+  food processor:                    object/food-processor
+  football:                          object/football
+  football helmet:                   object/football-helmet
+  footwear:                          appearance/clothing/footwear
+  fork:                              object/fork
+  fox:                               object/fox
+  french fries:                      object/french-fries
+  frog:                              object/frog
+  fruit:                             object/fruit
+  frying pan:                        object/frying-pan
+  furniture:                         object/furniture
+  gas stove:                         object/gas-stove
+  giraffe:                           object/giraffe
+  girl:                              object/girl
+  glasses:                           appearance/eyewear/glasses
+  glove:                             object/glove
+  goat:                              object/goat
+  goggles:                           appearance/eyewear/goggles
+  goldfish:                          object/goldfish
+  golf ball:                         object/golf-ball
+  golf cart:                         object/golf-cart
+  gondola:                           object/gondola
+  goose:                             object/goose
+  grape:                             object/grape
+  grapefruit:                        object/grapefruit
+  grinder:                           object/grinder
+  guacamole:                         object/guacamole
+  guitar:                            object/guitar
+  hair dryer:                        object/hair-dryer
+  hair spray:                        object/hair-spray
+  hamburger:                         object/hamburger
+  hammer:                            object/hammer
+  hamster:                           object/hamster
+  hand dryer:                        object/hand-dryer
+  handbag:                           object/handbag
+  handgun:                           object/handgun
+  harbor seal:                       object/harbor-seal
+  harmonica:                         object/harmonica
+  harp:                              object/harp
+  harpsichord:                       object/harpsichord
+  hat:                               appearance/clothing/hat
+  headphones:                        object/headphones
+  heater:                            object/heater
+  hedgehog:                          object/hedgehog
+  helicopter:                        object/vehicle/helicopter
+  helmet:                            appearance/clothing/helmet
+  high heels:                        appearance/clothing/high-heels
+  hiking equipment:                  object/hiking-equipment
+  hippopotamus:                      object/hippopotamus
+  home appliance:                    object/home-appliance
+  honeycomb:                         object/honeycomb
+  horizontal bar:                    object/horizontal-bar
+  horn:                              object/horn
+  horse:                             object/horse
+  hot dog:                           object/hot-dog
+  houseplant:                        object/houseplant
+  human arm:                         object/human-arm
+  human beard:                       object/human-beard
+  human body:                        object/human-body
+  human ear:                         object/human-ear
+  human eye:                         object/human-eye
+  human face:                        object/human-face
+  human foot:                        object/human-foot
+  human hair:                        object/human-hair
+  human hand:                        object/human-hand
+  human head:                        object/human-head
+  human leg:                         object/human-leg
+  human mouth:                       object/human-mouth
+  human nose:                        object/human-nose
+  humidifier:                        object/humidifier
+  ice cream:                         object/ice-cream
+  indoor rower:                      object/indoor-rower
+  infant bed:                        object/infant-bed
+  insect:                            object/insect
+  invertebrate:                      object/invertebrate
+  ipod:                              object/ipod
+  isopod:                            object/isopod
+  jacket:                            appearance/clothing/jacket
+  jacuzzi:                           object/jacuzzi
+  jaguar:                            object/jaguar
+  jeans:                             appearance/clothing/jeans
+  jellyfish:                         object/jellyfish
+  jet ski:                           object/jet-ski
+  jug:                               object/jug
+  juice:                             object/juice
+  kangaroo:                          object/kangaroo
+  kettle:                            object/kettle
+  kitchen & dining room table:       object/kitchen-dining-room-table
+  kitchen appliance:                 object/kitchen-appliance
+  kitchen knife:                     object/kitchen-knife
+  kitchen utensil:                   object/kitchen-utensil
+  kitchenware:                       object/kitchenware
+  kite:                              object/kite
+  knife:                             object/knife
+  koala:                             object/koala
+  ladder:                            object/ladder
+  ladle:                             object/ladle
+  ladybug:                           object/ladybug
+  lamp:                              object/lamp
+  land vehicle:                      object/land-vehicle
+  lantern:                           object/lantern
+  laptop:                            object/laptop
+  lavender:                          object/lavender
+  lemon:                             object/lemon
+  leopard:                           object/leopard
+  lifejacket:                        object/lifejacket
+  light bulb:                        object/light-bulb
+  light switch:                      object/light-switch
+  lily:                              object/lily
+  limousine:                         object/limousine
+  lion:                              object/lion
+  lipstick:                          object/lipstick
+  lizard:                            object/lizard
+  lobster:                           object/lobster
+  loveseat:                          object/loveseat
+  luggage and bags:                  object/luggage-and-bags
+  lynx:                              object/lynx
+  magpie:                            object/magpie
+  mammal:                            object/mammal
+  man:                               object/man
+  mango:                             object/mango
+  maple:                             object/maple
+  maracas:                           object/maracas
+  marine invertebrates:              object/marine-invertebrates
+  marine mammal:                     object/marine-mammal
+  measuring cup:                     object/measuring-cup
+  mechanical fan:                    object/mechanical-fan
+  medical equipment:                 object/medical-equipment
+  microphone:                        object/microphone
+  microwave oven:                    object/microwave-oven
+  milk:                              object/milk
+  miniskirt:                         object/miniskirt
+  mirror:                            object/mirror
+  missile:                           object/missile
+  mixer:                             object/mixer
+  mixing bowl:                       object/mixing-bowl
+  mobile phone:                      object/mobile-phone
+  monkey:                            object/monkey
+  moths and butterflies:             object/moths-and-butterflies
+  motorcycle:                        object/vehicle/motorcycle
+  mouse:                             object/mouse
+  muffin:                            object/muffin
+  mug:                               object/mug
+  mule:                              object/mule
+  mushroom:                          object/mushroom
+  musical instrument:                object/musical-instrument
+  musical keyboard:                  object/musical-keyboard
+  nail:                              object/nail
+  necklace:                          appearance/jewelry/necklace
+  nightstand:                        object/nightstand
+  oboe:                              object/oboe
+  office supplies:                   object/office-supplies
+  orange:                            object/orange
+  organ:                             object/organ
+  ostrich:                           object/ostrich
+  otter:                             object/otter
+  oven:                              object/oven
+  owl:                               object/owl
+  oyster:                            object/oyster
+  paddle:                            object/paddle
+  palm tree:                         object/palm-tree
+  pancake:                           object/pancake
+  panda:                             object/panda
+  paper cutter:                      object/paper-cutter
+  paper towel:                       object/paper-towel
+  parachute:                         object/parachute
+  parking meter:                     object/parking-meter
+  parrot:                            object/parrot
+  pasta:                             object/pasta
+  pastry:                            object/pastry
+  peach:                             object/peach
+  pear:                              object/pear
+  pen:                               object/pen
+  pencil case:                       object/pencil-case
+  pencil sharpener:                  object/pencil-sharpener
+  penguin:                           object/penguin
+  perfume:                           object/perfume
+  person:                            object/person
+  personal care:                     object/personal-care
+  piano:                             object/piano
+  picnic basket:                     object/picnic-basket
+  picture frame:                     object/picture-frame
+  pig:                               object/pig
+  pillow:                            object/pillow
+  pineapple:                         object/pineapple
+  pitcher:                           object/pitcher
+  pizza:                             object/pizza
+  pizza cutter:                      object/pizza-cutter
+  plant:                             object/plant
+  plastic bag:                       object/plastic-bag
+  plate:                             object/plate
+  platter:                           object/platter
+  plumbing fixture:                  object/plumbing-fixture
+  polar bear:                        object/polar-bear
+  pomegranate:                       object/pomegranate
+  popcorn:                           object/popcorn
+  porcupine:                         object/porcupine
+  poster:                            object/poster
+  potato:                            object/potato
+  power plugs and sockets:           object/power-plugs-and-sockets
+  pressure cooker:                   object/pressure-cooker
+  pretzel:                           object/pretzel
+  printer:                           object/printer
+  pumpkin:                           object/pumpkin
+  punching bag:                      object/punching-bag
+  rabbit:                            object/rabbit
+  raccoon:                           object/raccoon
+  racket:                            object/racket
+  radish:                            object/radish
+  ratchet:                           object/ratchet
+  raven:                             object/raven
+  rays and skates:                   object/rays-and-skates
+  red panda:                         object/red-panda
+  refrigerator:                      object/refrigerator
+  remote control:                    object/remote-control
+  reptile:                           object/reptile
+  rhinoceros:                        object/rhinoceros
+  rifle:                             object/rifle
+  ring binder:                       object/ring-binder
+  rocket:                            object/rocket
+  roller skates:                     object/roller-skates
+  rose:                              object/rose
+  rugby ball:                        object/rugby-ball
+  ruler:                             object/ruler
+  salad:                             object/salad
+  salt and pepper shakers:           object/salt-and-pepper-shakers
+  sandal:                            object/sandal
+  sandwich:                          object/sandwich
+  saucer:                            object/saucer
+  saxophone:                         object/saxophone
+  scale:                             object/scale
+  scarf:                             appearance/clothing/scarf
+  scissors:                          object/scissors
+  scoreboard:                        object/scoreboard
+  scorpion:                          object/scorpion
+  screwdriver:                       object/screwdriver
+  sculpture:                         object/sculpture
+  sea lion:                          object/sea-lion
+  sea turtle:                        object/sea-turtle
+  seafood:                           object/seafood
+  seahorse:                          object/seahorse
+  seat belt:                         object/seat-belt
+  segway:                            object/segway
+  serving tray:                      object/serving-tray
+  sewing machine:                    object/sewing-machine
+  shark:                             object/shark
+  sheep:                             object/sheep
+  shelf:                             object/shelf
+  shellfish:                         object/shellfish
+  shirt:                             appearance/clothing/shirt
+  shorts:                            appearance/clothing/shorts
+  shotgun:                           object/shotgun
+  shrimp:                            object/shrimp
+  sink:                              object/sink
+  skateboard:                        object/skateboard
+  ski:                               object/ski
+  skirt:                             appearance/clothing/skirt
+  skull:                             object/skull
+  skunk:                             object/skunk
+  slow cooker:                       object/slow-cooker
+  snack:                             object/snack
+  snail:                             object/snail
+  snake:                             object/snake
+  snowboard:                         object/snowboard
+  snowman:                           object/snowman
+  snowmobile:                        object/snowmobile
+  snowplow:                          object/snowplow
+  soap dispenser:                    object/soap-dispenser
+  sock:                              object/sock
+  sofa bed:                          object/sofa-bed
+  sombrero:                          object/sombrero
+  sparrow:                           object/sparrow
+  spatula:                           object/spatula
+  spice rack:                        object/spice-rack
+  spider:                            object/spider
+  spoon:                             object/spoon
+  sports equipment:                  object/sports-equipment
+  sports uniform:                    object/sports-uniform
+  squash:                            object/squash
+  squid:                             object/squid
+  squirrel:                          object/squirrel
+  stairs:                            object/stairs
+  stapler:                           object/stapler
+  starfish:                          object/starfish
+  stationary bicycle:                object/stationary-bicycle
+  stethoscope:                       object/stethoscope
+  stool:                             object/stool
+  stop sign:                         object/stop-sign
+  strawberry:                        object/strawberry
+  street light:                      object/street-light
+  stretcher:                         object/stretcher
+  studio couch:                      object/studio-couch
+  submarine:                         object/submarine
+  submarine sandwich:                object/submarine-sandwich
+  suit:                              appearance/clothing/suit
+  suitcase:                          object/suitcase
+  sun hat:                           appearance/clothing/sun-hat
+  sunflower:                         object/sunflower
+  sunglasses:                        appearance/eyewear/sunglasses
+  surfboard:                         object/surfboard
+  sushi:                             object/sushi
+  swan:                              object/swan
+  swim cap:                          object/swim-cap
+  swimming pool:                     object/swimming-pool
+  swimwear:                          appearance/clothing/swimwear
+  sword:                             object/sword
+  syringe:                           object/syringe
+  table:                             object/table
+  table tennis racket:               object/table-tennis-racket
+  tablet computer:                   object/tablet-computer
+  tableware:                         object/tableware
+  taco:                              object/taco
+  tank:                              object/tank
+  tap:                               object/tap
+  tart:                              object/tart
+  taxi:                              object/taxi
+  tea:                               object/tea
+  teapot:                            object/teapot
+  teddy bear:                        object/teddy-bear
+  telephone:                         object/telephone
+  television:                        object/television
+  tennis ball:                       object/tennis-ball
+  tennis racket:                     object/tennis-racket
+  tent:                              object/tent
+  tiara:                             appearance/jewelry/tiara
+  tick:                              object/tick
+  tie:                               appearance/clothing/tie
+  tiger:                             object/tiger
+  tin can:                           object/tin-can
+  tire:                              object/tire
+  toaster:                           object/toaster
+  toilet:                            object/toilet
+  toilet paper:                      object/toilet-paper
+  tomato:                            object/tomato
+  tool:                              object/tool
+  toothbrush:                        object/toothbrush
+  torch:                             object/torch
+  tortoise:                          object/tortoise
+  towel:                             appearance/clothing/towel
+  toy:                               object/toy
+  traffic light:                     object/traffic-light
+  traffic sign:                      object/traffic-sign
+  train:                             object/vehicle/train
+  training bench:                    object/training-bench
+  treadmill:                         object/treadmill
+  tree:                              object/tree
+  tripod:                            object/tripod
+  trombone:                          object/trombone
+  trousers:                          appearance/clothing/trousers
+  truck:                             object/vehicle/truck
+  trumpet:                           object/trumpet
+  turkey:                            object/turkey
+  turtle:                            object/turtle
+  umbrella:                          object/umbrella
+  unicycle:                          object/unicycle
+  van:                               object/vehicle/van
+  vase:                              object/vase
+  vegetable:                         object/vegetable
+  vehicle:                           object/vehicle/vehicle
+  vehicle registration plate:        object/vehicle-registration-plate
+  violin:                            object/violin
+  volleyball:                        object/volleyball
+  waffle:                            object/waffle
+  waffle iron:                       object/waffle-iron
+  wall clock:                        object/wall-clock
+  wardrobe:                          object/wardrobe
+  washing machine:                   object/washing-machine
+  waste container:                   object/waste-container
+  watch:                             appearance/jewelry/watch
+  watercraft:                        object/vehicle/watercraft
+  watermelon:                        object/watermelon
+  weapon:                            object/weapon
+  whale:                             object/whale
+  wheel:                             object/wheel
+  wheelchair:                        object/wheelchair
+  whisk:                             object/whisk
+  whiteboard:                        object/whiteboard
+  willow:                            object/willow
+  window:                            object/window
+  window blind:                      object/window-blind
+  wine:                              object/wine
+  wine glass:                        object/wine-glass
+  wine rack:                         object/wine-rack
+  winter melon:                      object/winter-melon
+  wok:                               object/wok
+  woman:                             object/woman
+  wood-burning stove:                object/wood-burning-stove
+  woodpecker:                        object/woodpecker
+  worm:                              object/worm
+  wrench:                            object/wrench
+  zebra:                             object/zebra
+  zucchini:                          object/zucchini
+
+  # -- attribute: SUN scene attributes (102 terms)
+  aged:                              attribute/aged
+  asphalt:                           attribute/asphalt
+  bathing:                           attribute/bathing
+  biking:                            attribute/biking
+  boating:                           attribute/boating
+  brick:                             attribute/brick
+  camping:                           attribute/camping
+  carpet:                            attribute/carpet
+  cleaning:                          attribute/cleaning
+  climbing:                          attribute/climbing
+  cloth:                             attribute/cloth
+  clouds:                            sky/clouds
+  cluttered space:                   attribute/cluttered-space
+  cold:                              attribute/cold
+  competing:                         attribute/competing
+  concrete:                          attribute/concrete
+  conducting business:               attribute/conducting-business
+  congregating:                      attribute/congregating
+  constructing:                      attribute/constructing
+  digging:                           attribute/digging
+  dirt:                              attribute/dirt
+  dirty:                             attribute/dirty
+  diving:                            attribute/diving
+  driving:                           attribute/driving
+  dry:                               attribute/dry
+  eating:                            attribute/eating
+  enclosed area:                     attribute/enclosed-area
+  exercise:                          attribute/exercise
+  far-away horizon:                  attribute/far-away-horizon
+  farming:                           attribute/farming
+  fencing:                           attribute/fencing
+  fire:                              attribute/fire
+  flowers:                           attribute/flowers
+  foliage:                           attribute/foliage
+  gaming:                            attribute/gaming
+  glass:                             attribute/glass
+  glossy:                            attribute/glossy
+  grass:                             attribute/grass
+  hiking:                            attribute/hiking
+  horizontal components:             attribute/horizontal-components
+  ice:                               attribute/ice
+  indoor lighting:                   attribute/indoor-lighting
+  leaves:                            attribute/leaves
+  man-made:                          attribute/man-made
+  marble:                            attribute/marble
+  matte:                             attribute/matte
+  medical activity:                  attribute/medical-activity
+  metal:                             attribute/metal
+  moist:                             attribute/moist
+  natural:                           attribute/natural
+  natural light:                     attribute/natural-light
+  no horizon:                        attribute/no-horizon
+  open area:                         attribute/open-area
+  paper:                             attribute/paper
+  pavement:                          attribute/pavement
+  plastic:                           attribute/plastic
+  playing:                           attribute/playing
+  praying:                           attribute/praying
+  railing:                           attribute/railing
+  railroad:                          attribute/railroad
+  reading:                           attribute/reading
+  research:                          attribute/research
+  rock:                              attribute/rock
+  rugged scene:                      attribute/rugged-scene
+  running water:                     attribute/running-water
+  rusty:                             attribute/rusty
+  sand:                              attribute/sand
+  scary:                             attribute/scary
+  semi-enclosed area:                attribute/semi-enclosed-area
+  shingles:                          attribute/shingles
+  shopping:                          attribute/shopping
+  shrubbery:                         attribute/shrubbery
+  smoke:                             attribute/smoke
+  snow:                              attribute/snow
+  socializing:                       attribute/socializing
+  soothing:                          attribute/soothing
+  spectating:                        attribute/spectating
+  sports:                            attribute/sports
+  sterile:                           attribute/sterile
+  still water:                       attribute/still-water
+  stressful:                         attribute/stressful
+  studying:                          attribute/studying
+  sunbathing:                        attribute/sunbathing
+  sunny:                             attribute/sunny
+  surf:                              attribute/surf
+  swimming:                          attribute/swimming
+  symmetrical:                       attribute/symmetrical
+  tiles:                             attribute/tiles
+  touring:                           attribute/touring
+  training:                          attribute/training
+  transporting:                      attribute/transporting
+  trees:                             attribute/trees
+  using tools:                       attribute/using-tools
+  vegetation:                        attribute/vegetation
+  vertical components:               attribute/vertical-components
+  vinyl:                             attribute/vinyl
+  waiting in line:                   attribute/waiting-in-line
+  warm:                              attribute/warm
+  wire:                              attribute/wire
+  wood:                              attribute/wood
+  working:                           attribute/working
+
+  # -- appearance: curated enumerations (87 terms)
+  3d-render:                         appearance/medium/3d-render
+  aerial:                            appearance/medium/aerial
+  anklet:                            appearance/jewelry/anklet
+  apron:                             appearance/clothing/apron
+  armor:                             appearance/clothing/armor
+  auburn hair:                       appearance/hair/auburn
+  bald hair:                         appearance/hair/bald
+  bikini:                            appearance/clothing/bikini
+  black hair:                        appearance/hair/black
+  blonde hair:                       appearance/hair/blonde
+  blouse:                            appearance/clothing/blouse
+  boots:                             appearance/clothing/boots
+  bracelet:                          appearance/jewelry/bracelet
+  braided hair:                      appearance/hair/braided
+  brooch:                            appearance/jewelry/brooch
+  brown hair:                        appearance/hair/brown
+  bun hair:                          appearance/hair/bun
+  cap:                               appearance/clothing/cap
+  choker:                            appearance/jewelry/choker
+  cloak:                             appearance/clothing/cloak
+  costume:                           appearance/clothing/costume
+  crop-top:                          appearance/clothing/crop-top
+  curly hair:                        appearance/hair/curly
+  drawing:                           appearance/medium/drawing
+  gloves:                            appearance/clothing/gloves
+  gown:                              appearance/clothing/gown
+  grey hair:                         appearance/hair/grey
+  hair-ornament:                     appearance/jewelry/hair-ornament
+  heels:                             appearance/clothing/heels
+  hoodie:                            appearance/clothing/hoodie
+  kimono:                            appearance/clothing/kimono
+  lingerie:                          appearance/clothing/lingerie
+  long hair:                         appearance/hair/long
+  long-exposure:                     appearance/medium/long-exposure
+  macro:                             appearance/medium/macro
+  monochrome:                        appearance/medium/monochrome
+  monocle:                           appearance/eyewear/monocle
+  night-photo:                       appearance/medium/night-photo
+  painting:                          appearance/medium/painting
+  pendant:                           appearance/jewelry/pendant
+  photograph:                        appearance/medium/photograph
+  pixel-art:                         appearance/medium/pixel-art
+  ponytail hair:                     appearance/hair/ponytail
+  red hair:                          appearance/hair/red
+  ring:                              appearance/jewelry/ring
+  robe:                              appearance/clothing/robe
+  sandals:                           appearance/clothing/sandals
+  shoes:                             appearance/clothing/shoes
+  short hair:                        appearance/hair/short
+  silhouette:                        appearance/medium/silhouette
+  silver hair:                       appearance/hair/silver
+  sketch:                            appearance/medium/sketch
+  straight hair:                     appearance/hair/straight
+  sweater:                           appearance/clothing/sweater
+  swimsuit:                          appearance/clothing/swimsuit
+  t-shirt:                           appearance/clothing/t-shirt
+  tank-top:                          appearance/clothing/tank-top
+  underwater-photo:                  appearance/medium/underwater-photo
+  uniform:                           appearance/clothing/uniform
+  veil:                              appearance/clothing/veil
+  vest:                              appearance/clothing/vest
+  watercolour:                       appearance/medium/watercolour
+  wavy hair:                         appearance/hair/wavy
+  wetsuit:                           appearance/clothing/wetsuit
+  white hair:                        appearance/hair/white
+
+  # -- added from eb63881d-coco1500.txt (269 terms, 38 colour variants)
+  alcohol:                           food/alcohol
+  architecture:                      place/architecture
+  arm hair:                          appearance/hair/arm
+  art tools in frame:                object/art-tools-in-frame
+  bag:                               object/bag
+  bald:                              appearance/hairstyle/bald
+  bare shoulders:                    object/bare-shoulders
+  bare tree:                         nature/bare-tree
+  barefoot:                          object/barefoot
+  baseball:                          activity/baseball
+  baseball cap:                      appearance/clothing/baseball-cap
+  baseball mitt:                     object/baseball-mitt
+  baseball uniform:                  appearance/clothing/baseball-uniform
+  basket:                            object/basket
+  basketball uniform:                appearance/clothing/basketball-uniform
+  beach umbrella:                    object/beach-umbrella
+  beanie:                            appearance/clothing/beanie
+  beard:                             appearance/facial-hair/beard
+  birthday cake:                     food/birthday-cake
+  black cat:                         animal/cat
+  black eyes:                        appearance/eyes/black
+  blanket:                           furniture/blanket
+  blood:                             object/blood
+  blue eyes:                         appearance/eyes/blue
+  blue hair:                         appearance/hair/blue
+  blue sky:                          sky
+  bodysuit:                          appearance/clothing/bodysuit
+  bookshelf:                         furniture/bookshelf
+  bow:                               object/bow
+  braid:                             appearance/hairstyle/braid
+  branch:                            nature/branch
+  brick wall:                        urban/brick-wall
+  brown eyes:                        appearance/eyes/brown
+  bucket:                            object/bucket
+  bush:                              nature/bush
+  buzz cut:                          appearance/hairstyle/buzz-cut
+  cabinet:                           furniture/cabinet
+  cable:                             object/cable
+  cafe:                              place/cafe
+  camouflage:                        appearance/clothing/camouflage
+  can:                               tableware/can
+  candlestand:                       object/candlestand
+  ceiling light:                     furniture/ceiling-light
+  cellphone:                         object/cellphone
+  chain:                             object/chain
+  chain-link fence:                  urban/chain-link-fence
+  chandelier:                        furniture/chandelier
+  child:                             person/child
+  christmas:                         activity/christmas
+  cigarette:                         object/cigarette
+  city:                              place/city
+  cityscape:                         urban/cityscape
+  clear sky:                         sky
+  clock tower:                       urban/clock-tower
+  clothes writing:                   object/clothes-writing
+  cloud:                             sky/cloud
+  cloudy sky:                        sky
+  collar:                            object/collar
+  collared shirt:                    appearance/clothing/collared-shirt
+  colored pencil (medium):           medium/colored-pencil
+  computer:                          object/computer
+  controller:                        object/controller
+  cow:                               animal/cow
+  crossed arms:                      object/crossed-arms
+  crossed legs:                      object/crossed-legs
+  crowd:                             person/crowd
+  cup:                               tableware/cup
+  curtains:                          object/curtains
+  dappled sunlight:                  nature/dappled-sunlight
+  dark:                              object/dark
+  day:                               object/day
+  denim:                             appearance/clothing/denim
+  desert:                            place/desert
+  desk lamp:                         furniture/desk-lamp
+  disposable cup:                    tableware/disposable-cup
+  diving suit:                       appearance/clothing/diving-suit
+  drawing tablet:                    object/drawing-tablet
+  drink can:                         tableware/drink-can
+  drinking glass:                    tableware/drinking-glass
+  earphones:                         object/earphones
+  english text:                      object/english-text
+  facial hair:                       appearance/hair/facial
+  fangs:                             fantasy/fangs
+  fat:                               object/fat
+  fat man:                           object/fat-man
+  faucet:                            furniture/faucet
+  feet out of frame:                 object/feet-out-of-frame
+  fence:                             urban/fence
+  field:                             place/field
+  fighter jet:                       object/vehicle/fighter-jet
+  fingerless gloves:                 appearance/clothing/gloves
+  fingernails:                       object/fingernails
+  floral print:                      object/floral-print
+  footprints:                        object/footprints
+  forest:                            place/forest
+  formal:                            object/formal
+  full moon:                         sky/full-moon
+  glowing:                           object/glowing
+  graffiti:                          urban/graffiti
+  green eyes:                        appearance/eyes/green
+  grey sky:                          sky
+  greyscale:                         medium/greyscale
+  grin:                              object/grin
+  gun:                               object/gun
+  hairband:                          appearance/clothing/hairband
+  hand in pocket:                    object/hand-in-pocket
+  head out of frame:                 object/head-out-of-frame
+  headband:                          appearance/clothing/headband
+  headwear:                          appearance/clothing/headwear
+  heart:                             object/heart
+  hood:                              appearance/clothing/hood
+  hood down:                         object/hood-down
+  horizon:                           sky/horizon
+  horns:                             fantasy/horns
+  horror (theme):                    object/horror-theme
+  horseback riding:                  activity/horseback-riding
+  indoors:                           place/indoors
+  inline skates:                     object/inline-skates
+  instrument:                        object/instrument
+  jet:                               object/vehicle/jet
+  jewelry:                           object/jewelry
+  jumping:                           object/jumping
+  keyboard (computer):               object/keyboard-computer
+  knee pads:                         appearance/clothing/knee-pads
+  lake:                              water/lake
+  lamppost:                          urban/lamppost
+  landscape:                         object/landscape
+  leaf:                              nature/leaf
+  leash:                             object/leash
+  license plate:                     urban/license-plate
+  light:                             object/light
+  long sleeves:                      appearance/clothing/long-sleeves
+  male swimwear:                     appearance/clothing/male-swimwear
+  mask:                              object/mask
+  meat:                              food/meat
+  mecha:                             scifi/mecha
+  microwave:                         furniture/microwave
+  military:                          person/military
+  military vehicle:                  object/vehicle/military-vehicle
+  monitor:                           object/monitor
+  moon:                              sky/moon
+  motor vehicle:                     object/vehicle/motor-vehicle
+  motorcycle helmet:                 object/motorcycle-helmet
+  muscular male:                     object/muscular-male
+  mustache:                          appearance/facial-hair/mustache
+  nail polish:                       appearance/cosmetics/nail-polish
+  napkin:                            tableware/napkin
+  nature:                            object/nature
+  necktie:                           appearance/clothing/necktie
+  newspaper:                         object/newspaper
+  night:                             sky/night
+  night sky:                         sky
+  noodles:                           food/noodles
+  office chair:                      furniture/office-chair
+  old:                               object/old
+  old man:                           person/old-man
+  on back:                           object/on-back
+  on bed:                            object/on-bed
+  on side:                           object/on-side
+  open clothes:                      object/open-clothes
+  open jacket:                       appearance/clothing/jacket
+  outdoors:                          place/outdoors
+  outstretched arms:                 object/outstretched-arms
+  pants:                             appearance/clothing/pants
+  pantyhose:                         appearance/clothing/pantyhose
+  pencil:                            object/pencil
+  people:                            person/people
+  phone:                             object/phone
+  photorealistic:                    medium/photorealistic
+  pizza slice:                       food/pizza-slice
+  plaid:                             appearance/clothing/plaid
+  plaid shirt:                       appearance/clothing/shirt
+  pointing:                          object/pointing
+  police:                            person/police
+  police uniform:                    appearance/clothing/police-uniform
+  policeman:                         person/policeman
+  ponytail:                          appearance/hairstyle/ponytail
+  portrait:                          object/portrait
+  potted plant:                      nature/potted-plant
+  pov:                               object/pov
+  power lines:                       urban/power-lines
+  print shirt:                       appearance/clothing/shirt
+  railroad tracks:                   urban/railroad-tracks
+  rain:                              sky/rain
+  realistic:                         medium/realistic
+  reflection:                        medium/reflection
+  reins:                             object/reins
+  rice:                              food/rice
+  riding:                            activity/riding
+  road:                              place/road
+  road sign:                         urban/road-sign
+  robot:                             scifi/robot
+  rug:                               furniture/rug
+  saddle:                            object/saddle
+  scenery:                           nature/scenery
+  school uniform:                    appearance/clothing/school-uniform
+  science fiction:                   scifi/science-fiction
+  shadow:                            medium/shadow
+  ship:                              object/vehicle/ship
+  shop:                              place/shop
+  shore:                             place/shore
+  short sleeves:                     appearance/clothing/short-sleeves
+  shower head:                       furniture/shower-head
+  sign:                              urban/sign
+  skates:                            object/skates
+  ski goggles:                       appearance/eyewear/ski-goggles
+  sleeping:                          activity/sleeping
+  sleeveless:                        appearance/clothing/sleeveless
+  sleeveless dress:                  appearance/clothing/dress
+  smartphone:                        object/smartphone
+  smoking:                           activity/smoking
+  sneakers:                          appearance/clothing/sneakers
+  snowing:                           sky/snowing
+  soccer:                            activity/soccer
+  soccer ball:                       object/soccer-ball
+  soccer uniform:                    appearance/clothing/soccer-uniform
+  socks:                             appearance/clothing/socks
+  sports car:                        object/vehicle/sports-car
+  sportswear:                        appearance/clothing/sportswear
+  spring onion:                      food/spring-onion
+  stadium:                           place/stadium
+  statue:                            object/statue
+  still life:                        medium/still-life
+  stove:                             furniture/stove
+  striped clothes:                   appearance/clothing/striped-clothes
+  striped necktie:                   appearance/clothing/necktie
+  striped shirt:                     appearance/clothing/shirt
+  stuffed animal:                    object/stuffed-animal
+  stuffed toy:                       object/stuffed-toy
+  sun:                               sky/sun
+  sunlight:                          medium/sunlight
+  sunset:                            sky/sunset
+  surfing:                           activity/surfing
+  swivel chair:                      furniture/swivel-chair
+  taking picture:                    activity/taking-picture
+  tank top:                          appearance/clothing/tank-top
+  tattoo:                            appearance/tattoo/tattoo
+  teacup:                            tableware/teacup
+  tennis uniform:                    appearance/clothing/tennis-uniform
+  theme:                             appearance/clothing/theme
+  tile floor:                        object/tile-floor
+  tile wall:                         object/tile-wall
+  tissue box:                        object/tissue-box
+  tongue out:                        object/tongue-out
+  traditional media:                 medium/traditional-media
+  traffic cone:                      urban/traffic-cone
+  train station:                     place/train-station
+  trash can:                         furniture/trash-can
+  under covers:                      object/under-covers
+  utility pole:                      urban/utility-pole
+  vending machine:                   urban/vending-machine
+  very short hair:                   appearance/hair/very_short
+  wading:                            activity/wading
+  water:                             object/water
+  water bottle:                      tableware/water-bottle
+  watercolor (medium):               medium/watercolor
+  waves:                             water/waves
+  whiskers:                          object/whiskers
+  window blinds:                     furniture/window-blinds
+  wine bottle:                       tableware/wine-bottle
+  winter:                            object/winter
+  winter clothes:                    appearance/clothing/winter-clothes
+  wolf:                              animal/wolf
+  wooden floor:                      object/wooden-floor
+  wooden table:                      furniture/wooden-table
+  wrinkled skin:                     appearance/skin/wrinkled
+  wristband:                         appearance/clothing/wristband
+  wristwatch:                        appearance/jewelry/wristwatch
+  yellow eyes:                       appearance/eyes/yellow
+  black dress:                       appearance/clothing/dress
+  black footwear:                    appearance/clothing/footwear
+  black gloves:                      appearance/clothing/gloves
+  black headwear:                    appearance/clothing/headwear
+  black jacket:                      appearance/clothing/jacket
+  black necktie:                     appearance/clothing/necktie
+  black pants:                       appearance/clothing/pants
+  black shirt:                       appearance/clothing/shirt
+  black shorts:                      appearance/clothing/shorts
+  black suit:                        appearance/clothing/suit
+  blue jacket:                       appearance/clothing/jacket
+  blue necktie:                      appearance/clothing/necktie
+  blue pants:                        appearance/clothing/pants
+  blue shirt:                        appearance/clothing/shirt
+  blue shorts:                       appearance/clothing/shorts
+  blue theme:                        appearance/clothing/theme
+  brown pants:                       appearance/clothing/pants
+  green shirt:                       appearance/clothing/shirt
+  grey pants:                        appearance/clothing/pants
+  grey shirt:                        appearance/clothing/shirt
+  pink shirt:                        appearance/clothing/shirt
+  red flower:                        object/flower
+  red headwear:                      appearance/clothing/headwear
+  red jacket:                        appearance/clothing/jacket
+  red necktie:                       appearance/clothing/necktie
+  red pants:                         appearance/clothing/pants
+  red shirt:                         appearance/clothing/shirt
+  white dress:                       appearance/clothing/dress
+  white flower:                      object/flower
+  white footwear:                    appearance/clothing/footwear
+  white gloves:                      appearance/clothing/gloves
+  white headwear:                    appearance/clothing/headwear
+  white pants:                       appearance/clothing/pants
+  white shirt:                       appearance/clothing/shirt
+  white shorts:                      appearance/clothing/shorts
+  white socks:                       appearance/clothing/socks
+  white tank top:                    appearance/clothing/tank-top
+  yellow shirt:                      appearance/clothing/shirt
+
+  # -- one-off overrides
+  abs:                               ~
+  english text:                      ~
+  blue theme:                        ~
+  red lips:                          ~
