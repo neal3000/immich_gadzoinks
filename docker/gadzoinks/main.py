@@ -5,6 +5,7 @@ import re
 import psycopg2
 import psycopg2.extras
 import os
+import threading
 import traceback
 import requests as req
 from fastapi import FastAPI, Request,status
@@ -12,6 +13,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from WorkflowParser4 import parse_comfyui_workflow_async
 from EmbeddedMetadata import extract_from_tags
+import gz_tagger
 
 # gz_asset_metadata.meta_source: who wrote the row.
 #   'gadzoinks' - the ComfyUI node posted it to /gz/ingest (authoritative)
@@ -85,9 +87,75 @@ def coerce_bigint(val):
     except (ValueError, TypeError):
         return None
 
+# ---------------------------------------------------------------------------
+# Automatic ai/ tagging. Off unless GZ_TAG_ENABLED=1.
+# ---------------------------------------------------------------------------
+
+_tag_stop = threading.Event()
+_tag_thread = None
+
+
+def _tagging_loop():
+    """Ticks every GZ_TAG_INTERVAL seconds in a thread.
+
+    A thread rather than an async task because ONNX inference is CPU-bound:
+    run inline in the event loop it would stall every /gz/ request for the
+    length of a pass, which during a first backfill is hours. ONNX Runtime
+    releases the GIL during inference, so the API stays responsive.
+    """
+    cfg = gz_tagger.Config()
+    dprint(f"tagger: enabled, every {cfg.interval}s, model {cfg.model}")
+    # Immich and Postgres may still be coming up, and ensure_schema() has to
+    # have run before the first pass touches gz_tag_*.
+    if _tag_stop.wait(45):
+        return
+    while not _tag_stop.is_set():
+        try:
+            gz_tagger.run_pass(get_connection, cfg, log=dprint)
+        except Exception:
+            dprint("tagger: loop error\n" + traceback.format_exc())
+        _tag_stop.wait(cfg.interval)
+
+
 @app.on_event("startup")
 async def startup():
+    global _tag_thread
     ensure_schema()
+    cfg = gz_tagger.Config()
+    if not cfg.enabled:
+        dprint("tagger: disabled (set GZ_TAG_ENABLED=1)")
+        return
+    _tag_thread = threading.Thread(
+        target=_tagging_loop, name="gz-tagger", daemon=True
+    )
+    _tag_thread.start()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    # daemon=True plus the event means shutdown never waits out a long pass.
+    _tag_stop.set()
+
+
+@app.get("/gz/tagger/status")
+async def tagger_status():
+    return gz_tagger.status(get_connection)
+
+
+@app.post("/gz/tagger/run")
+async def tagger_run():
+    """Runs a pass now instead of waiting for the timer.
+
+    Synchronous: the request stays open for the length of the pass, so this
+    is a manual nudge, not a webhook target.
+    """
+    cfg = gz_tagger.Config()
+    if not cfg.enabled:
+        return JSONResponse({"error": "tagging disabled"}, status_code=409)
+    result = gz_tagger.run_pass(get_connection, cfg, log=dprint)
+    if result is None:
+        return JSONResponse({"status": "already running"}, status_code=202)
+    return result
 
 @app.post("/gz/test")
 async def test(request: Request):
@@ -726,4 +794,6 @@ ALTER TABLE gz_asset_metadata ADD COLUMN IF NOT EXISTS meta_source TEXT;
 UPDATE gz_asset_metadata SET meta_source = 'gadzoinks' WHERE meta_source IS NULL;
 """
 
-
+# Tagging tables (gz_tag_*). Kept in gz_tagger.py so the schema travels with
+# the code that depends on it; ensure_schema() applies this too.
+SCHEMA_SQL = SCHEMA_SQL + gz_tagger.SCHEMA_SQL
