@@ -715,6 +715,28 @@ def status(get_connection: Callable[[], Any]) -> dict[str, Any]:
         ):
             cur.execute(sql)
             out[key] = cur.fetchone()["c"]
+        # Why things are deferred, not just how many. Without this the only
+        # way to find out that every fetch is being refused is to open psql,
+        # and "deferred: 500" on its own looks like patience rather than a
+        # misconfiguration.
+        cur.execute(
+            """
+            SELECT reason, count(*) AS c, max(attempts) AS attempts
+              FROM gz_tag_deferred
+             GROUP BY reason
+             ORDER BY c DESC
+             LIMIT 5
+            """
+        )
+        out["deferred_reasons"] = [
+            {"reason": r["reason"], "count": r["c"], "attempts": r["attempts"]}
+            for r in cur.fetchall()
+        ]
+        cfg = Config()
+        out["immich_url"] = cfg.immich_url
+        out["immich_key_set"] = bool(cfg.immich_key)
+        out["enabled"] = cfg.enabled
+        out["prompt_boost"] = cfg.prompt_boost
         out["model_version"] = get_state(cur, "model_version")
         out["vocabulary_version"] = get_state(cur, "vocabulary_version")
         out["model_loaded"] = _model is not None

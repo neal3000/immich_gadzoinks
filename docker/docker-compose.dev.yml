@@ -204,12 +204,17 @@ services:
     restart: unless-stopped
     volumes:
       - ./gadzoinks:/app    # host code mounted into container
+      # Tagger model cache (HF_HOME). Without this the ~400MB model is
+      # downloaded again on every container recreate, since /app is the only
+      # other persistent path and it is the source tree.
+      - gz_model_cache:/models
     env_file:
       - .env
     ports:
       - '2289:2289'
 
 volumes:
+  gz_model_cache:
   model_cache:
   prometheus_data:
   grafana_data:
