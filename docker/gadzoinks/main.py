@@ -13,7 +13,19 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from WorkflowParser4 import parse_comfyui_workflow_async
 from EmbeddedMetadata import extract_from_tags
-import gz_tagger
+
+# Tagging is optional and must never be able to take the sidecar down with
+# it. It pulls in numpy, pillow and onnxruntime; if the image was not rebuilt
+# after those were added, or a wheel is missing for the platform, the import
+# fails. The metadata API has nothing to do with tagging and should keep
+# serving regardless, so this is caught rather than allowed to kill uvicorn
+# at startup.
+try:
+    import gz_tagger
+    GZ_TAGGER_ERROR = None
+except Exception as exc:  # pragma: no cover - depends on the image
+    gz_tagger = None
+    GZ_TAGGER_ERROR = f"{type(exc).__name__}: {exc}"
 
 # gz_asset_metadata.meta_source: who wrote the row.
 #   'gadzoinks' - the ComfyUI node posted it to /gz/ingest (authoritative)
@@ -121,6 +133,11 @@ def _tagging_loop():
 async def startup():
     global _tag_thread
     ensure_schema()
+    if gz_tagger is None:
+        dprint(f"tagger: unavailable, continuing without it ({GZ_TAGGER_ERROR})")
+        dprint("tagger: rebuild the image if this is a missing dependency "
+               "(docker compose build gadzoinks)")
+        return
     cfg = gz_tagger.Config()
     if not cfg.enabled:
         dprint("tagger: disabled (set GZ_TAG_ENABLED=1)")
@@ -139,6 +156,11 @@ async def shutdown():
 
 @app.get("/gz/tagger/status")
 async def tagger_status():
+    if gz_tagger is None:
+        return JSONResponse(
+            {"error": "tagger unavailable", "detail": GZ_TAGGER_ERROR},
+            status_code=503,
+        )
     return gz_tagger.status(get_connection)
 
 
@@ -149,6 +171,11 @@ async def tagger_run():
     Synchronous: the request stays open for the length of the pass, so this
     is a manual nudge, not a webhook target.
     """
+    if gz_tagger is None:
+        return JSONResponse(
+            {"error": "tagger unavailable", "detail": GZ_TAGGER_ERROR},
+            status_code=503,
+        )
     cfg = gz_tagger.Config()
     if not cfg.enabled:
         return JSONResponse({"error": "tagging disabled"}, status_code=409)
@@ -795,5 +822,8 @@ UPDATE gz_asset_metadata SET meta_source = 'gadzoinks' WHERE meta_source IS NULL
 """
 
 # Tagging tables (gz_tag_*). Kept in gz_tagger.py so the schema travels with
-# the code that depends on it; ensure_schema() applies this too.
-SCHEMA_SQL = SCHEMA_SQL + gz_tagger.SCHEMA_SQL
+# the code that depends on it; ensure_schema() applies this too. Skipped when
+# the tagger could not be imported — the existing gz_* schema still applies,
+# so metadata keeps working.
+if gz_tagger is not None:
+    SCHEMA_SQL = SCHEMA_SQL + gz_tagger.SCHEMA_SQL
